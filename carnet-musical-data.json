@@ -1,41 +1,6 @@
 {
   "tracks": [
     {
-      "id": "t4",
-      "titre": "Dernière danse",
-      "artiste": "Indila",
-      "annee": 2014,
-      "proposePar": "Sofia",
-      "spotify": "",
-      "deezer": "https://www.deezer.com/track/79196991",
-      "youtube": "https://www.youtube.com/watch?v=K5KAc5CoCuk",
-      "tags": [
-        "nostalgie",
-        "francais",
-        "calme"
-      ],
-      "likes": [
-        "Alice",
-        "Marc",
-        "Sofia"
-      ],
-      "addedAt": 1778198662908,
-      "cover": "https://cdn-images.dzcdn.net/images/cover/b060e7699e47c1771ebda29b25c1ea8d/500x500-000000-80-0-0.jpg",
-      "genre": "Alternative",
-      "popularity": 26369,
-      "similar": [
-        "Love Story",
-        "Tourner dans le vide"
-      ],
-      "plays": 11,
-      "playLog": [
-        1780358662908,
-        1782086662908,
-        1783209862908
-      ],
-      "jukebox": ""
-    },
-    {
       "id": "t5",
       "titre": "Levitating",
       "artiste": "Dua Lipa",
