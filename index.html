@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Carnet : v0.7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F3EA; --bg-alt:#EFE7D4; --card:#FFFDF8;
+  --ink:#211C17; --ink-soft:#6B6152; --line:#DCD2BB;
+  --accent:#A63446; --accent-ink:#ffffff;
+  --accent2:#B8842A; --accent2-bg:#F2E3C2;
+  --teal:#2F6F6E; --teal-bg:#DDEAE8;
+  --violet:#6E4C9E; --violet-bg:#E8DEF4;
+  --shadow: 0 1px 0 rgba(33,28,23,0.04), 0 8px 20px -12px rgba(33,28,23,0.25);
+  --radius: 3px;
+}
+[data-theme="dark"]{
+  --bg:#15120D; --bg-alt:#1D1912; --card:#221D15;
+  --ink:#F3EEE2; --ink-soft:#B2A891; --line:#3A3122;
+  --accent:#E07387; --accent-ink:#1B0F12;
+  --accent2:#F0B45D; --accent2-bg:#3A2E17;
+  --teal:#6FC7C1; --teal-bg:#173330;
+  --violet:#B79BE0; --violet-bg:#2A2038;
+  --shadow: 0 1px 0 rgba(0,0,0,0.2), 0 10px 24px -12px rgba(0,0,0,0.6);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;transition:background .25s ease,color .25s ease;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+.display{font-family:'Fraunces',serif;}
+a{color:inherit;}
+button{font-family:inherit;cursor:pointer;}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px;}
+.hint{font-size:12.5px;color:var(--ink-soft);line-height:1.5;}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 80px;}
+header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--line);padding:16px 20px;}
+.top-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;}
+.brand .disc{width:34px;height:34px;border-radius:50%;background:
+  radial-gradient(circle at center, var(--card) 0 4px, var(--accent) 5px, var(--accent) 9px, transparent 10px),
+  repeating-radial-gradient(circle at center, #00000022 0 1px, transparent 1px 4px), var(--ink); flex:none;}
+.brand h1{font-size:22px;margin:0;font-weight:600;letter-spacing:.2px;}
+.brand span.tagline{display:block;font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;letter-spacing:.03em;}
+.pseudo-field{display:flex;align-items:center;gap:8px;}
+.pseudo-field label{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.06em;}
+.pseudo-field input{background:var(--bg-alt);border:1px solid var(--line);border-radius:var(--radius);padding:7px 10px;font-size:14px;color:var(--ink);width:130px;}
+.theme-toggle{border:1px solid var(--line);background:var(--bg-alt);border-radius:20px;width:52px;height:28px;position:relative;padding:0;flex:none;}
+.theme-toggle .knob{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:var(--accent);transition:transform .2s ease;display:flex;align-items:center;justify-content:center;font-size:12px;}
+[data-theme="dark"] .theme-toggle .knob{transform:translateX(24px);}
+
+.sync-line{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--radius);background:var(--bg-alt);border:1px solid var(--line);font-size:13px;margin-bottom:14px;}
+.sync-line.ok{border-color:var(--teal);color:var(--teal);}
+.sync-line.warn{border-color:var(--accent2);color:var(--accent2);}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:20px 0 14px;}
+.toolbar input[type=text], .toolbar select{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:9px 11px;font-size:14px;color:var(--ink);}
+.search-box{flex:1 1 220px;position:relative;}
+.search-box input{width:100%;padding-left:38px;}
+.search-box::before{content:"⌕";position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--ink-soft);font-size:15px;pointer-events:none;}
+.chip-btn{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:8px 14px;font-size:13px;color:var(--ink-soft);white-space:nowrap;}
+.chip-btn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);}
+.sort-row{display:flex;gap:6px;flex-wrap:wrap;}
+.sort-btn{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:8px 13px;font-size:13px;color:var(--ink-soft);white-space:nowrap;display:flex;align-items:center;gap:5px;}
+.sort-btn.active{background:var(--teal-bg);border-color:var(--teal);color:var(--teal);font-weight:600;}
+.btn-primary{background:var(--ink);color:var(--bg);border:none;border-radius:var(--radius);padding:10px 16px;font-size:14px;font-weight:600;}
+[data-theme="dark"] .btn-primary{background:var(--accent);color:var(--accent-ink);}
+.btn-primary:hover{opacity:.88;}
+
+.subrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+.subrow .lbl{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.05em;}
+.tagrow, .plrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.tagchip{border:1px solid var(--line);background:transparent;border-radius:20px;padding:5px 12px;font-size:12.5px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+.tagchip.active{background:var(--teal-bg);border-color:var(--teal);color:var(--teal);}
+.plchip{border:1px solid var(--line);background:var(--violet-bg);border-radius:20px;padding:6px 13px;font-size:12.5px;color:var(--violet);font-family:'IBM Plex Mono',monospace;}
+.plchip.active{background:var(--violet);color:#fff;border-color:var(--violet);}
+
+.group{margin-bottom:34px;}
+.group-label{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.group-label .txt{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+.group-label .line{flex:1;height:1px;background:var(--line);}
+.grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(290px,1fr));gap:14px;}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);position:relative;display:flex;flex-direction:column;gap:10px;}
+.card.clickable{cursor:pointer;}
+.card.clickable:hover{box-shadow:0 2px 0 rgba(33,28,23,0.06), 0 12px 26px -12px rgba(33,28,23,0.32);}
+.card.dup-flag::after{content:"DOUBLON ?";position:absolute;top:10px;right:-8px;transform:rotate(8deg);background:transparent;color:var(--accent);border:2px solid var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;padding:2px 6px;border-radius:2px;opacity:.85;pointer-events:none;}
+.card-top{display:flex;gap:12px;align-items:flex-start;}
+.disc-btn{flex:none;width:52px;height:52px;border-radius:50%;border:none;position:relative;background-size:cover;background-position:center;
+  background-color:var(--ink);
+  background-image: radial-gradient(circle at center, var(--card) 0 8px, var(--ink) 9px, var(--ink) 25px, transparent 26px), repeating-radial-gradient(circle at center, #00000030 0 1.5px, transparent 1.5px 5px);}
+.disc-btn.has-cover{background-image:none;}
+.disc-btn::after{content:"▶";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--bg);font-size:10px;text-shadow:0 0 4px rgba(0,0,0,.6);}
+.disc-btn.has-cover::after{color:#fff;}
+.card.clickable:hover .disc-btn{animation:spin 1.8s linear infinite;}
+@media (prefers-reduced-motion: reduce){ .card.clickable:hover .disc-btn{animation:none;} }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+.card-meta{flex:1;min-width:0;}
+.card-meta h3{margin:0 0 2px;font-size:17px;font-weight:600;line-height:1.25;}
+.card-meta .sub{font-size:12.5px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.badge{font-size:11px;background:var(--accent2-bg);color:var(--accent2);padding:2px 8px;border-radius:20px;font-family:'IBM Plex Mono',monospace;}
+.badge.genre{background:var(--violet-bg);color:var(--violet);}
+.tags{display:flex;flex-wrap:wrap;gap:6px;}
+.tag{font-size:11.5px;background:var(--teal-bg);color:var(--teal);padding:3px 9px;border-radius:20px;font-family:'IBM Plex Mono',monospace;border:none;cursor:pointer;}
+.tag:hover{filter:brightness(0.94);}
+
+.platforms{display:flex;gap:6px;flex-wrap:wrap;}
+.plat{border:1px solid var(--line);background:var(--bg-alt);border-radius:20px;padding:5px 10px;font-size:11.5px;display:flex;align-items:center;gap:5px;color:var(--ink-soft);text-decoration:none;}
+.plat b{font-family:'IBM Plex Mono',monospace;font-weight:700;}
+.plat.disabled{opacity:.3;pointer-events:none;}
+.plat.spotify b{color:#1DB954;} .plat.deezer b{color:#a238ff;} .plat.youtube b{color:#FF0000;} .plat.jukebox b{color:var(--violet);}
+
+.embed-panel{border-top:1px dashed var(--line);padding-top:10px;display:none;}
+.embed-panel.open{display:block;}
+.embed-tabs{display:flex;gap:6px;margin-bottom:8px;}
+.embed-tabs button{border:1px solid var(--line);background:var(--bg-alt);border-radius:4px;padding:4px 9px;font-size:11.5px;color:var(--ink-soft);}
+.embed-tabs button.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+.embed-panel iframe{width:100%;border:none;border-radius:4px;display:block;}
+.yt-frame{width:100%;border-radius:4px;overflow:hidden;}
+.yt-controls{display:flex;align-items:center;gap:10px;margin-top:8px;}
+.yt-controls button{border:1px solid var(--line);background:var(--ink);color:var(--bg);border-radius:50%;width:30px;height:30px;font-size:12px;flex:none;}
+.yt-controls input[type=range]{flex:1;accent-color:var(--teal);}
+.yt-controls .vol-label{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;width:26px;}
+
+.card-foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:10px;}
+.foot-left{display:flex;gap:6px;flex-wrap:wrap;}
+.iconbtn{border:1px solid var(--line);background:transparent;border-radius:var(--radius);padding:6px 9px;font-size:13px;color:var(--ink-soft);display:flex;align-items:center;gap:5px;}
+.iconbtn.liked{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);}
+.iconbtn.faved{background:var(--accent2-bg);border-color:var(--accent2);color:var(--accent2);}
+.foot-right{display:flex;gap:4px;}
+.ghostbtn{border:none;background:transparent;color:var(--ink-soft);font-size:13px;padding:6px 8px;border-radius:var(--radius);}
+.ghostbtn:hover{background:var(--bg-alt);color:var(--ink);}
+
+.empty{text-align:center;padding:60px 20px;color:var(--ink-soft);border:1px dashed var(--line);border-radius:var(--radius);}
+.empty .display{font-size:20px;color:var(--ink);margin-bottom:6px;}
+
+.overlay{position:fixed;inset:0;background:rgba(20,16,10,.5);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;z-index:100;overflow-y:auto;}
+.overlay.open{display:flex;}
+.modal{background:var(--bg);border:1px solid var(--line);border-radius:6px;max-width:540px;width:100%;padding:26px;box-shadow:var(--shadow);}
+.modal.wide{max-width:640px;}
+.modal h2{margin:0 0 4px;font-size:20px;}
+.modal .hint{margin-bottom:18px;}
+.field{margin-bottom:13px;}
+.field label{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;}
+.field input{width:100%;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:9px 10px;font-size:14px;color:var(--ink);}
+.field-row{display:flex;gap:8px;align-items:flex-end;}
+.field-row input{flex:1;}
+.field-row .field{flex:1;margin-bottom:0;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.dup-warning{background:var(--accent2-bg);border:1px solid var(--accent2);color:var(--accent2);border-radius:var(--radius);padding:10px 12px;font-size:13px;margin-bottom:14px;line-height:1.4;}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;}
+.btn-secondary{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:var(--radius);padding:9px 15px;font-size:14px;}
+.btn-small{background:var(--bg-alt);border:1px solid var(--line);color:var(--ink);border-radius:var(--radius);padding:9px 12px;font-size:13px;white-space:nowrap;}
+.enrich-box{display:flex;gap:12px;align-items:flex-start;background:var(--bg-alt);border:1px solid var(--line);border-radius:var(--radius);padding:10px;margin:10px 0;font-size:12.5px;}
+.enrich-box img{width:56px;height:56px;border-radius:4px;object-fit:cover;flex:none;}
+.enrich-box div{line-height:1.5;}
+.pl-row-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);}
+.pl-check-item{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:14px;}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:20px;font-size:13.5px;opacity:0;pointer-events:none;transition:all .25s ease;z-index:200;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* stats */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:6px;}
+.stat-box{background:var(--bg-alt);border:1px solid var(--line);border-radius:var(--radius);padding:12px 10px;text-align:center;}
+.stat-num{font-family:'Fraunces',serif;font-size:26px;font-weight:600;}
+.stat-label{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.04em;}
+.barchart{display:flex;align-items:flex-end;gap:8px;height:110px;padding:0 4px;}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;}
+.bar{width:100%;max-width:26px;background:var(--teal);border-radius:3px 3px 0 0;}
+.bar-label{font-size:9.5px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+.statlist{margin:0;padding-left:20px;font-size:13px;line-height:1.9;}
+
+@media(max-width:560px){
+  .row2{grid-template-columns:1fr;}
+  .brand h1{font-size:18px;}
+}
+</style>
+</head>
+<body data-theme="light">
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="disc"></div>
+      <div><h1 class="display">Le Carnet</h1><span class="tagline">titres partagés entre nous — v0.7</span></div>
+    </div>
+    <div class="pseudo-field">
+      <label for="pseudoInput">Toi</label>
+      <input id="pseudoInput" type="text" placeholder="ton prénom" maxlength="24">
+    </div>
+    <button class="chip-btn" id="colorToggle" title="Activer/désactiver les couleurs">🎨 Couleurs</button>
+    <button class="theme-toggle" id="themeToggle" title="Basculer le mode sombre"><span class="knob">☾</span></button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="sync-line" id="syncLine">Vérification de la synchronisation…</div>
+  <div class="toolbar">
+    <div class="search-box"><input type="text" id="searchInput" placeholder="   Chercher un titre, un artiste, un tag…"></div>
+    <div class="sort-row" id="sortRow"></div>
+    <select id="groupSelect">
+      <option value="none">Grouper : aucun</option>
+      <option value="artiste">Grouper : par artiste</option>
+      <option value="tag">Grouper : par tag</option>
+      <option value="proposePar">Grouper : par personne</option>
+    </select>
+    <button class="chip-btn" id="favToggle">★ Mes favoris</button>
+    <button class="chip-btn" id="syncBtn">🔗 Fichier partagé</button>
+    <button class="chip-btn" id="playlistBtn">🎵 Playlists</button>
+    <button class="chip-btn" id="statsBtn">📊 Stats</button>
+    <button class="chip-btn" id="exportBtn">⇩ Exporter</button>
+    <button class="chip-btn" id="importBtn">⇧ Importer</button>
+    <input type="file" id="importInput" accept="application/json" style="display:none">
+    <button class="btn-primary" id="addBtn">＋ Ajouter un titre</button>
+  </div>
+
+  <div class="subrow">
+    <span class="lbl">Tags :</span>
+    <button class="sort-btn" id="tagSortAlpha">A-Z</button>
+    <button class="sort-btn" id="tagSortCount">Nb de titres</button>
+  </div>
+  <div class="tagrow" id="tagRow"></div>
+  <div class="plrow" id="playlistRow"></div>
+
+  <div id="content"></div>
+</div>
+
+<!-- add/edit modal -->
+<div class="overlay" id="overlay">
+  <div class="modal wide">
+    <h2 class="display" id="modalTitle">Ajouter un titre</h2>
+    <div class="hint">Renseigne ce que tu sais — au moins le titre et l'artiste.</div>
+    <div id="dupWarningSlot"></div>
+    <div class="field"><label>Titre</label><input id="f_titre" type="text"></div>
+    <div class="row2">
+      <div class="field"><label>Artiste</label><input id="f_artiste" type="text"></div>
+      <div class="field"><label>Année</label><input id="f_annee" type="text" inputmode="numeric" maxlength="4"></div>
+    </div>
+    <div class="field"><label>Proposé par</label><input id="f_proposePar" type="text"></div>
+    <div class="field"><label>Tags (séparés par une virgule)</label><input id="f_tags" type="text" placeholder="chill, soirée, route…"></div>
+    <div class="row2">
+      <div class="field"><label>Lien Spotify</label><input id="f_spotify" type="text" placeholder="https://open.spotify.com/track/…"></div>
+      <div class="field"><label>Lien Deezer</label><input id="f_deezer" type="text" placeholder="https://www.deezer.com/track/…"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Lien YouTube</label><input id="f_youtube" type="text" placeholder="https://youtube.com/watch?v=…"></div>
+      <div class="field"><label>Lien Eternal Jukebox</label><input id="f_jukebox" type="text" placeholder="https://eternalbox.floriegl.tech/…"></div>
+    </div>
+    <div id="enrichPreview"></div>
+    <div class="modal-actions" style="justify-content:space-between;">
+      <button class="btn-small" id="enrichBtn" type="button">🔎 Enrichir</button>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-secondary" id="cancelBtn">Annuler</button>
+        <button class="btn-primary" id="saveBtn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="confirmOverlay">
+  <div class="modal" style="max-width:380px;">
+    <h2 class="display" style="font-size:18px;">Supprimer ce titre ?</h2>
+    <div class="hint">Cette action est définitive pour tout le monde.</div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="confirmCancel">Annuler</button>
+      <button class="btn-primary" id="confirmOk" style="background:var(--accent);color:#fff;">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="syncOverlay">
+  <div class="modal">
+    <h2 class="display">Fichier partagé</h2>
+    <div class="hint">
+      Le Carnet n'a pas de serveur central : pour que plusieurs personnes voient les mêmes titres, on lit/écrit directement dans un fichier JSON que vous placez tous au même endroit (un dossier SharePoint/OneDrive synchronisé, un lecteur réseau, etc.) — un peu comme un fichier Excel partagé. Ce n'est pas du temps réel : si deux personnes modifient en même temps, la dernière sauvegarde l'emporte.
+    </div>
+    <div id="syncDetail" class="hint" style="margin-bottom:14px;"></div>
+    <div class="modal-actions" style="justify-content:flex-start;flex-wrap:wrap;">
+      <button class="btn-small" id="syncCreateBtn">🆕 Créer le fichier ici</button>
+      <button class="btn-small" id="syncLinkBtn">📂 Lier un fichier existant</button>
+      <button class="btn-small" id="syncReconnectBtn" style="display:none;">🔄 Se reconnecter</button>
+      <button class="btn-small" id="syncUnlinkBtn" style="display:none;">✕ Délier</button>
+    </div>
+    <div class="hint" style="margin-top:14px;">Fonctionne dans Chrome/Edge, en ouvrant ce fichier directement (pas depuis la fenêtre de chat de Claude.ai). Sur les autres navigateurs, ou si tu préfères, utilise Exporter / Importer dans la barre d'outils pour faire circuler manuellement le fichier de données.</div>
+    <div class="modal-actions"><button class="btn-secondary" id="syncClose">Fermer</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="playlistManageOverlay">
+  <div class="modal">
+    <h2 class="display">Playlists</h2>
+    <div class="hint">Crée des playlists thématiques, partagées avec tout le monde.</div>
+    <div class="field">
+      <label>Nouvelle playlist</label>
+      <div class="field-row">
+        <input id="newPlaylistName" type="text" placeholder="Pour se concentrer…">
+        <button class="btn-small" id="createPlaylistBtn">＋ Créer</button>
+      </div>
+    </div>
+    <div id="playlistManageList" style="margin-top:14px;"></div>
+    <div class="modal-actions"><button class="btn-secondary" id="playlistManageClose">Fermer</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="trackPlaylistOverlay">
+  <div class="modal" style="max-width:400px;">
+    <h2 class="display" style="font-size:18px;">Ajouter à une playlist</h2>
+    <div id="trackPlaylistList"></div>
+    <div class="field" style="margin-top:14px;">
+      <label>Nouvelle playlist</label>
+      <div class="field-row">
+        <input id="quickPlaylistName" type="text" placeholder="Nom de la playlist">
+        <button class="btn-small" id="quickCreatePlaylistBtn">＋ Créer et ajouter</button>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn-secondary" id="trackPlaylistClose">Fermer</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="statsOverlay">
+  <div class="modal wide">
+    <h2 class="display">Statistiques</h2>
+    <div class="hint">Vue d'ensemble du Carnet.</div>
+    <div id="statsBody"></div>
+    <div class="modal-actions"><button class="btn-secondary" id="statsCloseBtn">Fermer</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+const STORAGE_KEY = 'musicdb-v1';
+let DB = { tracks: [], favorites: {}, playlists: [] };
+let prefs = { pseudo: '', darkMode: false, colorMode: false };
+let state = { search:'', sort:'titre', sortDir:'asc', group:'none', activeTags:new Set(), favOnly:false, playlistFilter:null, tagSort:'alpha', editingId:null, openEmbed:null, embedTab:{} };
+const SORT_FIELDS = [
+  {key:'titre', label:'Titre', defaultDir:'asc', cmp:(a,b)=>a.titre.localeCompare(b.titre)},
+  {key:'artiste', label:'Artiste', defaultDir:'asc', cmp:(a,b)=>a.artiste.localeCompare(b.artiste)||a.titre.localeCompare(b.titre)},
+  {key:'annee', label:'Année', defaultDir:'desc', cmp:(a,b)=>(a.annee||0)-(b.annee||0)},
+  {key:'likes', label:'Likes', defaultDir:'desc', cmp:(a,b)=>(a.likes||[]).length-(b.likes||[]).length},
+  {key:'ajout', label:"Date d'ajout", defaultDir:'desc', cmp:(a,b)=>(a.addedAt||0)-(b.addedAt||0)},
+];
+let pendingEnrichment = null;
+let pendingDeleteId = null;
+let trackPlaylistContextId = null;
+
+const el = id => document.getElementById(id);
+
+
+// ---------- storage : cache local (IndexedDB) + fichier partagé (File System Access API) ----------
+const fsSupported = ('showOpenFilePicker' in window) && ('showSaveFilePicker' in window);
+let idbDB = null;
+let dbFileHandle = null;
+let needsReconnect = false;
+
+function openIDB(){
+  return new Promise((resolve, reject)=>{
+    if(!('indexedDB' in window)){ reject(new Error('no-indexeddb')); return; }
+    const req = indexedDB.open('carnet-musical-store', 1);
+    req.onupgradeneeded = ()=>{ if(!req.result.objectStoreNames.contains('kv')) req.result.createObjectStore('kv'); };
+    req.onsuccess = ()=>resolve(req.result);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+async function initIDB(){ try{ idbDB = await openIDB(); }catch(e){ idbDB = null; } }
+function idbGet(key){
+  return new Promise((resolve)=>{
+    if(!idbDB){ resolve(null); return; }
+    try{
+      const req = idbDB.transaction('kv','readonly').objectStore('kv').get(key);
+      req.onsuccess = ()=>resolve(req.result===undefined?null:req.result);
+      req.onerror = ()=>resolve(null);
+    }catch(e){ resolve(null); }
+  });
+}
+function idbSet(key, value){
+  return new Promise((resolve)=>{
+    if(!idbDB){ resolve(false); return; }
+    try{
+      const tx = idbDB.transaction('kv','readwrite');
+      tx.objectStore('kv').put(value, key);
+      tx.oncomplete = ()=>resolve(true);
+      tx.onerror = ()=>resolve(false);
+    }catch(e){ resolve(false); }
+  });
+}
+
+async function loadFromFileHandle(){
+  if(!dbFileHandle) return false;
+  try{
+    const file = await dbFileHandle.getFile();
+    const text = await file.text();
+    if(text && text.trim()){
+      const parsed = JSON.parse(text);
+      if(parsed && Array.isArray(parsed.tracks)){ DB = parsed; return true; }
+    }
+    return false;
+  }catch(e){ showToast('Lecture du fichier partagé impossible.'); return false; }
+}
+async function saveToFileHandle(){
+  if(!dbFileHandle) return false;
+  try{
+    const writable = await dbFileHandle.createWritable();
+    await writable.write(JSON.stringify(DB, null, 2));
+    await writable.close();
+    return true;
+  }catch(e){ showToast("Écriture dans le fichier partagé impossible (" + (e && e.message ? e.message : '') + ")."); return false; }
+}
+async function tryReconnectFileHandle(){
+  if(!fsSupported) return;
+  const handle = await idbGet('fileHandle');
+  if(!handle) return;
+  dbFileHandle = handle;
+  try{
+    const perm = await handle.queryPermission({mode:'readwrite'});
+    if(perm==='granted'){ needsReconnect=false; await loadFromFileHandle(); }
+    else { needsReconnect = true; }
+  }catch(e){ needsReconnect = true; }
+}
+async function linkExistingFile(){
+  if(!fsSupported){ showToast("Ton navigateur ne supporte pas cette fonction — utilise Export/Import."); return; }
+  try{
+    const [handle] = await window.showOpenFilePicker({
+      types:[{description:'Carnet musical (JSON)', accept:{'application/json':['.json']}}],
+    });
+    dbFileHandle = handle; needsReconnect = false;
+    await idbSet('fileHandle', handle);
+    const ok = await loadFromFileHandle();
+    if(!ok) await saveToFileHandle();
+    render();
+    updateSyncStatus();
+    showToast('Fichier lié : ' + handle.name);
+  }catch(e){ /* annulé par l'utilisateur */ }
+}
+async function createSharedFile(){
+  if(!fsSupported){ showToast("Ton navigateur ne supporte pas cette fonction — utilise Export/Import."); return; }
+  try{
+    const handle = await window.showSaveFilePicker({
+      suggestedName: 'carnet-musical-data.json',
+      types:[{description:'Carnet musical (JSON)', accept:{'application/json':['.json']}}],
+    });
+    dbFileHandle = handle; needsReconnect = false;
+    await idbSet('fileHandle', handle);
+    await saveToFileHandle();
+    updateSyncStatus();
+    showToast('Fichier créé et lié : ' + handle.name);
+  }catch(e){ /* annulé par l'utilisateur */ }
+}
+async function reconnectFile(){
+  if(!dbFileHandle) return;
+  try{
+    const perm = await dbFileHandle.requestPermission({mode:'readwrite'});
+    if(perm==='granted'){ needsReconnect=false; await loadFromFileHandle(); render(); updateSyncStatus(); showToast('Reconnecté.'); }
+    else showToast('Reconnexion refusée.');
+  }catch(e){ showToast('Reconnexion impossible.'); }
+}
+async function unlinkFile(){
+  dbFileHandle = null; needsReconnect = false;
+  await idbSet('fileHandle', null);
+  updateSyncStatus();
+  showToast('Fichier délié — le cache local de ce navigateur reste actif.');
+}
+function updateSyncStatus(){
+  const line = el('syncLine');
+  const detail = el('syncDetail');
+  const reconnectBtn = el('syncReconnectBtn');
+  const unlinkBtn = el('syncUnlinkBtn');
+  reconnectBtn.style.display = needsReconnect ? 'inline-block' : 'none';
+  unlinkBtn.style.display = dbFileHandle ? 'inline-block' : 'none';
+  if(dbFileHandle && !needsReconnect){
+    line.className = 'sync-line ok';
+    line.textContent = '🟢 Synchronisé avec ' + dbFileHandle.name + ' — chaque modification y est écrite directement.';
+    detail.textContent = 'Fichier lié : ' + dbFileHandle.name;
+    el('syncBtn').textContent = '🔗 ' + dbFileHandle.name;
+  } else if(dbFileHandle && needsReconnect){
+    line.className = 'sync-line warn';
+    line.textContent = '🟡 Fichier lié (' + dbFileHandle.name + ') mais accès à reconfirmer — clique sur « Fichier partagé » puis « Se reconnecter ».';
+    detail.textContent = "L'autorisation d'accès au fichier doit être reconfirmée après un rechargement de page.";
+    el('syncBtn').textContent = '🟡 Reconnexion requise';
+  } else if(fsSupported){
+    line.className = 'sync-line warn';
+    line.textContent = '⚪ Aucun fichier partagé lié — les ajouts restent en local à ce navigateur. Clique sur « Fichier partagé » pour en lier un (ex. dans un dossier SharePoint/OneDrive synchronisé).';
+    detail.textContent = "Pas encore de fichier lié.";
+    el('syncBtn').textContent = '🔗 Fichier partagé';
+  } else {
+    line.className = 'sync-line warn';
+    line.textContent = '⚪ Ce navigateur ne supporte pas la liaison directe de fichier — utilise Exporter / Importer pour partager tes données avec les autres.';
+    detail.textContent = 'Liaison directe non supportée sur ce navigateur (fonctionne sur Chrome/Edge).';
+    el('syncBtn').textContent = '⇩⇧ Exporter / Importer';
+  }
+}
+
+async function loadDB(){
+  await tryReconnectFileHandle();
+  if(!DB || !DB.tracks){
+    const cached = await idbGet('musicdb');
+    DB = (cached && cached.tracks) ? cached : null;
+  }
+  if(!DB || !DB.tracks){
+    DB = { tracks: [], favorites: {}, playlists: [] };
+  }
+  if(!DB.favorites) DB.favorites = {};
+  if(!DB.playlists) DB.playlists = [];
+  await saveDB();
+}
+async function saveDB(){
+  await idbSet('musicdb', DB);
+  if(dbFileHandle && !needsReconnect){ await saveToFileHandle(); }
+  updateSyncStatus();
+}
+async function loadPrefs(){
+  const cached = await idbGet('prefs');
+  prefs = cached || {pseudo:'',darkMode:false,colorMode:false};
+  if(prefs.colorMode===undefined) prefs.colorMode = false;
+}
+async function savePrefs(){ await idbSet('prefs', prefs); }
+
+
+// ---------- helpers ----------
+function normalize(s){ return (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'').trim(); }
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  if(!m) return n; if(!n) return m;
+  const d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);
+  for(let j=0;j<=n;j++) d[0][j]=j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
+    d[i][j]=Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[m][n];
+}
+function similar(a,b){
+  if(!a||!b) return false;
+  if(a===b) return true;
+  const dist = levenshtein(a,b);
+  const maxLen = Math.max(a.length,b.length);
+  return maxLen>0 && (1 - dist/maxLen) > 0.85;
+}
+function findDuplicate(titre, artiste, excludeId){
+  const nt = normalize(titre), na = normalize(artiste);
+  if(!nt && !na) return null;
+  return DB.tracks.find(t=>{
+    if(t.id===excludeId) return false;
+    return similar(normalize(t.titre), nt) && similar(normalize(t.artiste), na);
+  }) || null;
+}
+function extractYoutubeId(url){ if(!url) return null; const m = url.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/); return m ? m[1] : null; }
+function extractSpotifyId(url){ if(!url) return null; const m = url.match(/track\/([a-zA-Z0-9]+)/); return m ? m[1] : null; }
+function extractDeezerId(url){ if(!url) return null; const m = url.match(/track\/(\d+)/); return m ? m[1] : null; }
+function formatDate(ts){ if(!ts) return ''; return new Date(ts).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function escapeHtml(s){ return (s||'').toString().replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function showToast(msg){
+  const t = el('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(showToast._tm);
+  showToast._tm = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+function currentPseudo(){ return (prefs.pseudo||'').trim(); }
+function requirePseudo(){
+  if(!currentPseudo()){ el('pseudoInput').focus(); showToast("Indique ton prénom en haut pour continuer."); return false; }
+  return true;
+}
+function hashStr(s){ let h=0; for(let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i))|0; } return Math.abs(h); }
+function hueFor(s){ return hashStr(s||'x') % 360; }
+function tagStyle(tag){
+  if(!prefs.colorMode) return '';
+  const h = hueFor(tag);
+  const dark = document.body.getAttribute('data-theme')==='dark';
+  const bg = dark ? `hsl(${h} 42% 22%)` : `hsl(${h} 65% 90%)`;
+  const fg = dark ? `hsl(${h} 70% 78%)` : `hsl(${h} 55% 32%)`;
+  return `background:${bg};color:${fg};`;
+}
+function cardAccentStyle(t){
+  if(!prefs.colorMode) return '';
+  const h = hueFor(t.artiste || t.titre || 'x');
+  return `border-left:4px solid hsl(${h} 60% 50%);`;
+}
+
+// ---------- tags ----------
+function tagStats(){
+  const counts = {};
+  DB.tracks.forEach(t=>(t.tags||[]).forEach(tag=>{ counts[tag]=(counts[tag]||0)+1; }));
+  let tags = Object.keys(counts);
+  if(state.tagSort==='count') tags.sort((a,b)=> counts[b]-counts[a] || a.localeCompare(b));
+  else tags.sort((a,b)=>a.localeCompare(b));
+  return {tags, counts};
+}
+function toggleTagFilter(tag){
+  if(state.activeTags.has(tag)) state.activeTags.delete(tag); else state.activeTags.add(tag);
+  render();
+}
+window.toggleTagFilter = toggleTagFilter;
+
+// ---------- deezer JSONP enrichment ----------
+let jsonpCounter = 0;
+function deezerJsonp(url){
+  return new Promise((resolve, reject)=>{
+    const cbName = 'deezerCb'+(jsonpCounter++);
+    const script = document.createElement('script');
+    const timer = setTimeout(()=>{ cleanup(); reject(new Error('timeout')); }, 8000);
+    function cleanup(){ delete window[cbName]; script.remove(); clearTimeout(timer); }
+    window[cbName] = (data)=>{ cleanup(); resolve(data); };
+    script.onerror = ()=>{ cleanup(); reject(new Error('network')); };
+    script.src = url + (url.includes('?')?'&':'?') + 'output=jsonp&callback=' + cbName;
+    document.body.appendChild(script);
+  });
+}
+async function enrichFromDeezer(){
+  const titre = el('f_titre').value.trim();
+  const artiste = el('f_artiste').value.trim();
+  const deezerUrl = el('f_deezer').value.trim();
+  el('enrichPreview').innerHTML = '<div class="hint">Recherche en cours…</div>';
+  try{
+    let trackData;
+    const existingId = extractDeezerId(deezerUrl);
+    if(existingId){
+      trackData = await deezerJsonp(`https://api.deezer.com/track/${existingId}`);
+    } else if(titre && artiste){
+      const q = encodeURIComponent(`track:"${titre}" artist:"${artiste}"`);
+      const searchRes = await deezerJsonp(`https://api.deezer.com/search?q=${q}`);
+      if(!searchRes.data || !searchRes.data.length) throw new Error('notfound');
+      trackData = searchRes.data[0];
+    } else {
+      showToast("Indique au moins le titre et l'artiste, ou un lien Deezer.");
+      el('enrichPreview').innerHTML=''; return;
+    }
+    if(trackData.error) throw new Error('api');
+    let albumData = null;
+    if(trackData.album && trackData.album.id){
+      try{ albumData = await deezerJsonp(`https://api.deezer.com/album/${trackData.album.id}`); }catch(e){}
+    }
+    pendingEnrichment = {
+      cover: (albumData && (albumData.cover_big||albumData.cover_medium)) || (trackData.album && trackData.album.cover_big) || '',
+      genre: (albumData && albumData.genres && albumData.genres.data && albumData.genres.data[0]) ? albumData.genres.data[0].name : '',
+      popularity: trackData.rank || null,
+    };
+    if(!el('f_deezer').value.trim() && trackData.link) el('f_deezer').value = trackData.link;
+    if(!el('f_annee').value){
+      const rd = (albumData && albumData.release_date) || trackData.release_date;
+      if(rd) el('f_annee').value = rd.slice(0,4);
+    }
+    renderEnrichPreview();
+    showToast('Informations récupérées depuis Deezer.');
+  }catch(e){
+    el('enrichPreview').innerHTML = '<div class="hint">Impossible de récupérer des informations pour ce titre (essaie de préciser le lien Deezer, ou vérifie l\'orthographe).</div>';
+  }
+}
+function renderEnrichPreview(){
+  const slot = el('enrichPreview');
+  if(!pendingEnrichment){ slot.innerHTML=''; return; }
+  const p = pendingEnrichment;
+  slot.innerHTML = `<div class="enrich-box">
+    ${p.cover?`<img src="${p.cover}" alt="">`:''}
+    <div>
+      ${p.genre?`<div>Genre détecté : <b>${escapeHtml(p.genre)}</b></div>`:''}
+      ${p.popularity?`<div>Popularité Deezer : <b>${p.popularity.toLocaleString('fr-FR')}</b> <span class="hint">(indicateur Deezer, pas un nombre d'écoutes réel)</span></div>`:''}
+    </div>
+  </div>`;
+}
+el('enrichBtn').addEventListener('click', enrichFromDeezer);
+
+// ---------- YouTube compact player ----------
+let ytApiReady = false;
+let ytQueue = [];
+window.onYouTubeIframeAPIReady = ()=>{ ytApiReady = true; ytQueue.forEach(fn=>fn()); ytQueue=[]; };
+const ytPlayers = {};
+function ensureYTPlayer(t){
+  const vid = extractYoutubeId(t.youtube);
+  if(!vid) return;
+  const create = ()=>{
+    const target = document.getElementById('ytplayer-'+t.id);
+    if(!target) return;
+    if(ytPlayers[t.id]){ try{ ytPlayers[t.id].destroy(); }catch(e){} }
+    ytPlayers[t.id] = new YT.Player('ytplayer-'+t.id, {
+      height:'170', width:'100%', videoId: vid, playerVars:{ rel:0 },
+      events:{
+        onReady:(e)=>{ e.target.setVolume(70); },
+        onStateChange:(e)=>{
+          const btn = document.getElementById('ytplaybtn-'+t.id);
+          if(btn) btn.textContent = (e.data===YT.PlayerState.PLAYING) ? '⏸' : '▶';
+          if(e.data===YT.PlayerState.PLAYING) recordPlay(t.id, true);
+        }
+      }
+    });
+  };
+  if(ytApiReady) create(); else ytQueue.push(create);
+}
+window.ytToggle = (id)=>{
+  const p = ytPlayers[id];
+  if(!p || !p.getPlayerState) return;
+  if(p.getPlayerState()===1) p.pauseVideo(); else p.playVideo();
+};
+window.ytSetVolume = (id, val)=>{ const p = ytPlayers[id]; if(p && p.setVolume) p.setVolume(val); };
+
+// ---------- play tracking (proxy metric, not real platform streams) ----------
+let recentPlayGuard = {};
+async function recordPlay(id, fromYT){
+  const guardKey = id+(fromYT?'-yt':'-other');
+  const nowT = Date.now();
+  if(recentPlayGuard[guardKey] && nowT-recentPlayGuard[guardKey] < 15000) return;
+  recentPlayGuard[guardKey] = nowT;
+  const t = DB.tracks.find(x=>x.id===id);
+  if(!t) return;
+  t.plays = (t.plays||0)+1;
+  t.playLog = t.playLog||[];
+  t.playLog.push(nowT);
+  if(t.playLog.length>300) t.playLog = t.playLog.slice(-300);
+  await saveDB();
+}
+
+// ---------- filtering / grouping ----------
+function applyFilters(){
+  const q = normalize(state.search);
+  const pseudo = currentPseudo();
+  let list = DB.tracks.filter(t=>{
+    if(state.favOnly){ const favs = DB.favorites[pseudo]||[]; if(!favs.includes(t.id)) return false; }
+    if(state.playlistFilter){ const pl = (DB.playlists||[]).find(p=>p.id===state.playlistFilter); if(!pl || !pl.trackIds.includes(t.id)) return false; }
+    if(state.activeTags.size>0){ const tTags = new Set(t.tags||[]); for(const tag of state.activeTags) if(!tTags.has(tag)) return false; }
+    if(q){ const hay = normalize([t.titre,t.artiste,t.proposePar,t.genre,...(t.tags||[])].join(' ')); if(!hay.includes(q)) return false; }
+    return true;
+  });
+  const field = SORT_FIELDS.find(f=>f.key===state.sort) || SORT_FIELDS[0];
+  list.sort((a,b)=>{
+    const res = field.cmp(a,b);
+    return state.sortDir==='asc' ? res : -res;
+  });
+  return list;
+}
+function groupList(list){
+  if(state.group==='none') return [{label:null, items:list}];
+  const map = new Map();
+  list.forEach(t=>{
+    let keys;
+    if(state.group==='tag') keys = (t.tags&&t.tags.length)? t.tags : ['(sans tag)'];
+    else if(state.group==='artiste') keys = [t.artiste || '(inconnu)'];
+    else keys = [t.proposePar || '(inconnu)'];
+    keys.forEach(k=>{ if(!map.has(k)) map.set(k, []); map.get(k).push(t); });
+  });
+  return [...map.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([label,items])=>({label,items}));
+}
+
+// ---------- rendering ----------
+function renderSortRow(){
+  const row = el('sortRow'); row.innerHTML='';
+  SORT_FIELDS.forEach(f=>{
+    const active = state.sort===f.key;
+    const b = document.createElement('button');
+    b.className = 'sort-btn' + (active?' active':'');
+    b.textContent = f.label + (active ? (state.sortDir==='asc' ? ' ↑' : ' ↓') : '');
+    b.onclick = ()=>selectSort(f.key);
+    row.appendChild(b);
+  });
+}
+function selectSort(key){
+  const field = SORT_FIELDS.find(f=>f.key===key);
+  if(state.sort===key){ state.sortDir = state.sortDir==='asc' ? 'desc' : 'asc'; }
+  else { state.sort = key; state.sortDir = field.defaultDir; }
+  render();
+}
+function renderTagRow(){
+  const row = el('tagRow'); row.innerHTML='';
+  const {tags, counts} = tagStats();
+  tags.forEach(tag=>{
+    const b = document.createElement('button');
+    b.className = 'tagchip' + (state.activeTags.has(tag)?' active':'');
+    b.textContent = `#${tag} (${counts[tag]})`;
+    b.onclick = ()=>toggleTagFilter(tag);
+    row.appendChild(b);
+  });
+  el('tagSortAlpha').classList.toggle('active', state.tagSort==='alpha');
+  el('tagSortCount').classList.toggle('active', state.tagSort==='count');
+}
+function renderPlaylistRow(){
+  const row = el('playlistRow'); row.innerHTML='';
+  const allBtn = document.createElement('button');
+  allBtn.className = 'plchip' + (!state.playlistFilter?' active':'');
+  allBtn.textContent = 'Toutes les playlists';
+  allBtn.onclick = ()=>{ state.playlistFilter=null; render(); };
+  row.appendChild(allBtn);
+  (DB.playlists||[]).forEach(pl=>{
+    const b = document.createElement('button');
+    b.className = 'plchip' + (state.playlistFilter===pl.id?' active':'');
+    b.textContent = `🎵 ${pl.name} (${pl.trackIds.length})`;
+    b.onclick = ()=>{ state.playlistFilter = state.playlistFilter===pl.id ? null : pl.id; render(); };
+    row.appendChild(b);
+  });
+}
+function platformChip(kind, url, label, titleAttr){
+  const t = titleAttr ? ` title="${titleAttr.replace(/"/g,'')}"` : '';
+  if(!url) return `<span class="plat disabled ${kind}"${t}><b>${label}</b> —</span>`;
+  return `<a class="plat ${kind}" href="${url.replace(/"/g,'')}" target="_blank" rel="noopener" onclick="event.stopPropagation()"${t}><b>${label}</b> ouvrir</a>`;
+}
+function renderCard(t){
+  const pseudo = currentPseudo();
+  const likes = t.likes||[];
+  const liked = pseudo && likes.includes(pseudo);
+  const favs = DB.favorites[pseudo]||[];
+  const faved = pseudo && favs.includes(t.id);
+  const dup = findDuplicate(t.titre, t.artiste, t.id);
+  const hasEmbed = extractYoutubeId(t.youtube) || extractSpotifyId(t.spotify) || extractDeezerId(t.deezer);
+  const embedOpen = state.openEmbed===t.id;
+
+  return `
+  <div class="card ${dup?'dup-flag':''} ${hasEmbed?'clickable':''}" data-id="${t.id}" style="${cardAccentStyle(t)}" ${hasEmbed?`onclick="toggleEmbed('${t.id}')"`:''}>
+    <div class="card-top">
+      <button class="disc-btn ${t.cover?'has-cover':''}" style="${t.cover?`background-image:url('${t.cover}')`:''}" title="Écouter" tabindex="-1" ${hasEmbed?'':'disabled style="opacity:.35;cursor:default;"'}></button>
+      <div class="card-meta">
+        <h3 class="display">${escapeHtml(t.titre)}</h3>
+        <div class="sub">${escapeHtml(t.artiste)} ${t.annee?`— ${t.annee}`:''} ${t.addedAt?`· ajouté le ${formatDate(t.addedAt)}`:''}</div>
+        <div class="badges">
+          ${t.proposePar?`<span class="badge">proposé par ${escapeHtml(t.proposePar)}</span>`:''}
+          ${t.genre?`<span class="badge genre">${escapeHtml(t.genre)}</span>`:''}
+        </div>
+      </div>
+    </div>
+    ${t.tags&&t.tags.length?`<div class="tags">${t.tags.map(tg=>`<button class="tag" style="${tagStyle(tg)}" onclick="event.stopPropagation();toggleTagFilter('${tg.replace(/'/g,"\\'")}')">#${escapeHtml(tg)}</button>`).join('')}</div>`:''}
+    <div class="platforms">
+      ${platformChip('spotify', t.spotify, 'Spotify')}
+      ${platformChip('deezer', t.deezer, 'Deezer')}
+      ${platformChip('youtube', t.youtube, 'YouTube')}
+      ${platformChip('jukebox', t.jukebox, 'Jukebox')}
+    </div>
+    <div class="embed-panel ${embedOpen?'open':''}" id="embed-${t.id}" onclick="event.stopPropagation()">${renderEmbedTabs(t)}</div>
+    <div class="card-foot">
+      <div class="foot-left">
+        <button class="iconbtn ${liked?'liked':''}" onclick="event.stopPropagation();toggleLike('${t.id}')">♥ ${likes.length}</button>
+        <button class="iconbtn ${faved?'faved':''}" onclick="event.stopPropagation();toggleFav('${t.id}')">${faved?'★':'☆'} favori</button>
+      </div>
+      <div class="foot-right">
+        <button class="ghostbtn" onclick="event.stopPropagation();openTrackPlaylist('${t.id}')" title="Ajouter à une playlist">🎵+</button>
+        <button class="ghostbtn" onclick="event.stopPropagation();openEdit('${t.id}')" title="Modifier">✎</button>
+        <button class="ghostbtn" onclick="event.stopPropagation();askDelete('${t.id}')" title="Supprimer">🗑</button>
+      </div>
+    </div>
+  </div>`;
+}
+function renderEmbedTabs(t){
+  const tabs = [];
+  if(extractSpotifyId(t.spotify)) tabs.push('spotify');
+  if(extractDeezerId(t.deezer)) tabs.push('deezer');
+  if(extractYoutubeId(t.youtube)) tabs.push('youtube');
+  if(!tabs.length) return '';
+  const active = (state.embedTab[t.id]) || tabs[0];
+  const tabBtns = tabs.map(tab=>`<button class="${tab===active?'active':''}" onclick="setEmbedTab('${t.id}','${tab}')">${tab}</button>`).join('');
+  let frame = '';
+  if(active==='spotify'){
+    frame = `<iframe height="152" src="https://open.spotify.com/embed/track/${extractSpotifyId(t.spotify)}" allow="encrypted-media"></iframe>`;
+  } else if(active==='deezer'){
+    frame = `<iframe height="90" src="https://widget.deezer.com/widget/auto/track/${extractDeezerId(t.deezer)}" allow="encrypted-media"></iframe>`;
+  } else if(active==='youtube'){
+    frame = `<div class="yt-frame" id="ytplayer-${t.id}"></div>
+      <div class="yt-controls">
+        <button id="ytplaybtn-${t.id}" onclick="ytToggle('${t.id}')">▶</button>
+        <input type="range" min="0" max="100" value="70" oninput="ytSetVolume('${t.id}', this.value)">
+        <span class="vol-label mono">vol.</span>
+      </div>`;
+  }
+  return `<div class="embed-tabs">${tabBtns}</div>${frame}`;
+}
+function render(){
+  renderSortRow();
+  renderTagRow();
+  renderPlaylistRow();
+  const list = applyFilters();
+  const content = el('content');
+  if(list.length===0){
+    content.innerHTML = `<div class="empty"><div class="display">Rien ici pour l'instant</div><div>Essaie d'autres filtres, ou ajoute le premier titre de cette recherche.</div></div>`;
+    return;
+  }
+  const groups = groupList(list);
+  content.innerHTML = groups.map(g=>`
+    <div class="group">
+      ${g.label?`<div class="group-label"><span class="txt">${escapeHtml(g.label)} · ${g.items.length}</span><span class="line"></span></div>`:''}
+      <div class="grid">${g.items.map(renderCard).join('')}</div>
+    </div>`).join('');
+
+  if(state.openEmbed){
+    const t = DB.tracks.find(x=>x.id===state.openEmbed);
+    if(t){
+      const active = state.embedTab[t.id] || (extractSpotifyId(t.spotify)&&'spotify') || (extractDeezerId(t.deezer)&&'deezer') || (extractYoutubeId(t.youtube)&&'youtube');
+      if(active==='youtube') ensureYTPlayer(t);
+    }
+  }
+}
+
+// ---------- actions ----------
+window.toggleEmbed = (id)=>{
+  const wasOpen = state.openEmbed===id;
+  state.openEmbed = wasOpen ? null : id;
+  if(!wasOpen){
+    const t = DB.tracks.find(x=>x.id===id);
+    const tab = state.embedTab[id] || (extractSpotifyId(t.spotify)&&'spotify') || (extractDeezerId(t.deezer)&&'deezer') || (extractYoutubeId(t.youtube)&&'youtube');
+    if(tab && tab!=='youtube') recordPlay(id, false);
+  }
+  render();
+};
+window.setEmbedTab = (id, tab)=>{
+  state.embedTab[id] = tab;
+  if(tab!=='youtube') recordPlay(id, false);
+  render();
+};
+window.toggleLike = async (id)=>{
+  if(!requirePseudo()) return;
+  const pseudo = currentPseudo();
+  const t = DB.tracks.find(x=>x.id===id);
+  if(!t) return;
+  t.likes = t.likes||[];
+  const i = t.likes.indexOf(pseudo);
+  if(i>=0) t.likes.splice(i,1); else t.likes.push(pseudo);
+  render();
+  await saveDB();
+};
+window.toggleFav = async (id)=>{
+  if(!requirePseudo()) return;
+  const pseudo = currentPseudo();
+  DB.favorites[pseudo] = DB.favorites[pseudo]||[];
+  const arr = DB.favorites[pseudo];
+  const i = arr.indexOf(id);
+  if(i>=0) arr.splice(i,1); else arr.push(id);
+  render();
+  await saveDB();
+};
+window.askDelete = (id)=>{ pendingDeleteId = id; el('confirmOverlay').classList.add('open'); };
+window.openEdit = (id)=>{
+  const t = DB.tracks.find(x=>x.id===id);
+  if(!t) return;
+  state.editingId = id;
+  el('modalTitle').textContent = 'Modifier ce titre';
+  el('f_titre').value = t.titre||''; el('f_artiste').value = t.artiste||''; el('f_annee').value = t.annee||'';
+  el('f_proposePar').value = t.proposePar||''; el('f_tags').value = (t.tags||[]).join(', ');
+  el('f_spotify').value = t.spotify||''; el('f_deezer').value = t.deezer||'';
+  el('f_youtube').value = t.youtube||''; el('f_jukebox').value = t.jukebox||'';
+  el('dupWarningSlot').innerHTML='';
+  pendingEnrichment = (t.cover||t.genre||t.popularity) ? {cover:t.cover||'',genre:t.genre||'',popularity:t.popularity||null} : null;
+  renderEnrichPreview();
+  el('overlay').classList.add('open');
+};
+
+function resetModal(){
+  state.editingId = null;
+  el('modalTitle').textContent = 'Ajouter un titre';
+  ['f_titre','f_artiste','f_annee','f_proposePar','f_tags','f_spotify','f_deezer','f_youtube','f_jukebox'].forEach(id=>el(id).value='');
+  el('f_proposePar').value = currentPseudo();
+  el('dupWarningSlot').innerHTML = '';
+  pendingEnrichment = null;
+  renderEnrichPreview();
+}
+el('addBtn').onclick = ()=>{ resetModal(); el('overlay').classList.add('open'); };
+el('cancelBtn').onclick = ()=> el('overlay').classList.remove('open');
+el('overlay').addEventListener('click', e=>{ if(e.target.id==='overlay') el('overlay').classList.remove('open'); });
+
+function checkDupLive(){
+  const titre = el('f_titre').value, artiste = el('f_artiste').value;
+  const dup = findDuplicate(titre, artiste, state.editingId);
+  const slot = el('dupWarningSlot');
+  slot.innerHTML = dup ? `<div class="dup-warning">⚠️ Un titre très proche existe déjà : « ${escapeHtml(dup.titre)} » de ${escapeHtml(dup.artiste)}, proposé par ${escapeHtml(dup.proposePar||'?')}. Tu peux quand même l'enregistrer si c'est volontaire.</div>` : '';
+}
+['f_titre','f_artiste'].forEach(id=> el(id).addEventListener('input', checkDupLive));
+
+el('saveBtn').onclick = async ()=>{
+  const titre = el('f_titre').value.trim();
+  const artiste = el('f_artiste').value.trim();
+  if(!titre || !artiste){ showToast("Le titre et l'artiste sont nécessaires."); return; }
+  const tags = el('f_tags').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const payload = {
+    titre, artiste, annee: parseInt(el('f_annee').value)||null,
+    proposePar: el('f_proposePar').value.trim(), tags,
+    spotify: el('f_spotify').value.trim(), deezer: el('f_deezer').value.trim(),
+    youtube: el('f_youtube').value.trim(), jukebox: el('f_jukebox').value.trim(),
+    cover: pendingEnrichment ? pendingEnrichment.cover : '',
+    genre: pendingEnrichment ? pendingEnrichment.genre : '',
+    popularity: pendingEnrichment ? pendingEnrichment.popularity : null,
+  };
+  if(state.editingId){
+    const t = DB.tracks.find(x=>x.id===state.editingId);
+    Object.assign(t, payload);
+  } else {
+    payload.id = 't'+Date.now()+Math.floor(Math.random()*1000);
+    payload.likes = []; payload.addedAt = Date.now(); payload.plays = 0; payload.playLog = [];
+    DB.tracks.push(payload);
+  }
+  el('overlay').classList.remove('open');
+  render();
+  await saveDB();
+  showToast(dbFileHandle && !needsReconnect ? 'Enregistré dans le fichier partagé.' : 'Enregistré en local — pense à Exporter ou à lier un fichier partagé pour le diffuser.');
+};
+
+el('confirmCancel').onclick = ()=>{ el('confirmOverlay').classList.remove('open'); pendingDeleteId=null; };
+el('confirmOk').onclick = async ()=>{
+  if(pendingDeleteId){
+    DB.tracks = DB.tracks.filter(t=>t.id!==pendingDeleteId);
+    Object.keys(DB.favorites).forEach(p=>{ DB.favorites[p] = DB.favorites[p].filter(id=>id!==pendingDeleteId); });
+    (DB.playlists||[]).forEach(pl=>{ pl.trackIds = pl.trackIds.filter(id=>id!==pendingDeleteId); });
+  }
+  el('confirmOverlay').classList.remove('open'); pendingDeleteId = null;
+  render();
+  await saveDB();
+};
+
+// ---------- playlists ----------
+window.openTrackPlaylist = (id)=>{
+  trackPlaylistContextId = id;
+  renderTrackPlaylistList();
+  el('trackPlaylistOverlay').classList.add('open');
+};
+function renderTrackPlaylistList(){
+  const wrap = el('trackPlaylistList');
+  const pls = DB.playlists||[];
+  if(!pls.length){ wrap.innerHTML = '<div class="hint">Aucune playlist — crée-en une ci-dessous.</div>'; return; }
+  wrap.innerHTML = pls.map(pl=>{
+    const checked = pl.trackIds.includes(trackPlaylistContextId) ? 'checked' : '';
+    return `<label class="pl-check-item"><input type="checkbox" ${checked} onchange="toggleTrackInPlaylist('${pl.id}', this.checked)"> ${escapeHtml(pl.name)} <span class="hint">(${pl.trackIds.length})</span></label>`;
+  }).join('');
+}
+window.toggleTrackInPlaylist = async (plId, checked)=>{
+  const pl = (DB.playlists||[]).find(p=>p.id===plId);
+  if(!pl || !trackPlaylistContextId) return;
+  const idx = pl.trackIds.indexOf(trackPlaylistContextId);
+  if(checked && idx===-1) pl.trackIds.push(trackPlaylistContextId);
+  if(!checked && idx>=0) pl.trackIds.splice(idx,1);
+  renderTrackPlaylistList();
+  render();
+  await saveDB();
+};
+el('quickCreatePlaylistBtn').onclick = async ()=>{
+  const name = el('quickPlaylistName').value.trim();
+  if(!name){ showToast('Donne un nom à la playlist.'); return; }
+  DB.playlists = DB.playlists||[];
+  DB.playlists.push({id:'pl'+Date.now()+Math.floor(Math.random()*1000), name, trackIds: trackPlaylistContextId?[trackPlaylistContextId]:[], createdAt:Date.now()});
+  el('quickPlaylistName').value='';
+  renderTrackPlaylistList();
+  render();
+  await saveDB();
+};
+el('trackPlaylistClose').onclick = ()=> el('trackPlaylistOverlay').classList.remove('open');
+el('trackPlaylistOverlay').addEventListener('click', e=>{ if(e.target.id==='trackPlaylistOverlay') el('trackPlaylistOverlay').classList.remove('open'); });
+
+function renderPlaylistManageList(){
+  const wrap = el('playlistManageList');
+  const pls = DB.playlists||[];
+  if(!pls.length){ wrap.innerHTML = '<div class="hint">Aucune playlist pour l\'instant.</div>'; return; }
+  wrap.innerHTML = pls.map(pl=>`
+    <div class="pl-row-item">
+      <span>${escapeHtml(pl.name)} <span class="hint">(${pl.trackIds.length} titres)</span></span>
+      <button class="ghostbtn" onclick="deletePlaylist('${pl.id}')" title="Supprimer">🗑</button>
+    </div>`).join('');
+}
+window.deletePlaylist = async (id)=>{
+  DB.playlists = (DB.playlists||[]).filter(p=>p.id!==id);
+  if(state.playlistFilter===id) state.playlistFilter=null;
+  renderPlaylistManageList();
+  render();
+  await saveDB();
+};
+el('createPlaylistBtn').onclick = async ()=>{
+  const name = el('newPlaylistName').value.trim();
+  if(!name){ showToast('Donne un nom à la playlist.'); return; }
+  DB.playlists = DB.playlists||[];
+  DB.playlists.push({id:'pl'+Date.now()+Math.floor(Math.random()*1000), name, trackIds:[], createdAt:Date.now()});
+  el('newPlaylistName').value='';
+  renderPlaylistManageList();
+  render();
+  await saveDB();
+};
+el('playlistBtn').onclick = ()=>{ renderPlaylistManageList(); el('playlistManageOverlay').classList.add('open'); };
+el('playlistManageClose').onclick = ()=> el('playlistManageOverlay').classList.remove('open');
+el('playlistManageOverlay').addEventListener('click', e=>{ if(e.target.id==='playlistManageOverlay') el('playlistManageOverlay').classList.remove('open'); });
+
+// ---------- export / import ----------
+el('exportBtn').onclick = ()=>{
+  const blob = new Blob([JSON.stringify(DB, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'carnet-musical-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Export généré.');
+};
+el('importBtn').onclick = ()=> el('importInput').click();
+el('importInput').addEventListener('change', async (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+    if(!parsed.tracks || !Array.isArray(parsed.tracks)) throw new Error('format');
+    let added=0, skipped=0;
+    parsed.tracks.forEach(t=>{
+      if(!t.id || DB.tracks.some(x=>x.id===t.id)){ skipped++; return; }
+      DB.tracks.push(t); added++;
+    });
+    if(parsed.favorites){
+      Object.keys(parsed.favorites).forEach(p=>{
+        DB.favorites[p] = Array.from(new Set([...(DB.favorites[p]||[]), ...(parsed.favorites[p]||[])]));
+      });
+    }
+    if(parsed.playlists && Array.isArray(parsed.playlists)){
+      DB.playlists = DB.playlists||[];
+      parsed.playlists.forEach(pl=>{
+        if(!pl.id || DB.playlists.some(x=>x.id===pl.id)) return;
+        DB.playlists.push(pl);
+      });
+    }
+    render();
+    await saveDB();
+    showToast(`Import terminé : ${added} ajouté(s), ${skipped} déjà présent(s) ou ignoré(s).`);
+  }catch(err){
+    showToast("Le fichier n'a pas le bon format.");
+  }
+  e.target.value='';
+});
+
+// ---------- stats ----------
+function computeStats(){
+  const tracks = DB.tracks;
+  const people = new Set();
+  tracks.forEach(t=>{ if(t.proposePar) people.add(t.proposePar); (t.likes||[]).forEach(p=>people.add(p)); });
+  Object.keys(DB.favorites).forEach(p=>{ if((DB.favorites[p]||[]).length) people.add(p); });
+  const artists = new Set(tracks.map(t=>t.artiste).filter(Boolean));
+  const totalLikes = tracks.reduce((s,t)=>s+(t.likes||[]).length,0);
+  const totalPlays = tracks.reduce((s,t)=>s+(t.plays||0),0);
+  const addMonth = {};
+  tracks.forEach(t=>{ if(!t.addedAt) return; const d = new Date(t.addedAt); const key = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); addMonth[key]=(addMonth[key]||0)+1; });
+  const playMonth = {};
+  tracks.forEach(t=> (t.playLog||[]).forEach(ts=>{ const d = new Date(ts); const key = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); playMonth[key]=(playMonth[key]||0)+1; }));
+  const topPlayed = [...tracks].sort((a,b)=>(b.plays||0)-(a.plays||0)).filter(t=>t.plays).slice(0,5);
+  const topLiked = [...tracks].sort((a,b)=>(b.likes||[]).length-(a.likes||[]).length).filter(t=>(t.likes||[]).length).slice(0,5);
+  const playlists = (DB.playlists||[]).map(p=>({name:p.name, count:p.trackIds.length})).sort((a,b)=>b.count-a.count);
+  return {peopleCount:people.size, trackCount:tracks.length, artistCount:artists.size, totalLikes, totalPlays, addMonth, playMonth, topPlayed, topLiked, playlistCount:(DB.playlists||[]).length, playlists};
+}
+function barsHtml(dataObj){
+  const keys = Object.keys(dataObj).sort().slice(-8);
+  if(!keys.length) return '<div class="hint">Pas encore de données.</div>';
+  const max = Math.max(...keys.map(k=>dataObj[k]));
+  return `<div class="barchart">${keys.map(k=>`
+    <div class="bar-col">
+      <div class="bar" style="height:${Math.max(6,(dataObj[k]/max)*90)}px" title="${k} : ${dataObj[k]}"></div>
+      <span class="bar-label">${k.slice(2).replace('-','/')}</span>
+    </div>`).join('')}</div>`;
+}
+function renderStats(){
+  const s = computeStats();
+  el('statsBody').innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-num">${s.trackCount}</div><div class="stat-label">titres</div></div>
+      <div class="stat-box"><div class="stat-num">${s.artistCount}</div><div class="stat-label">artistes</div></div>
+      <div class="stat-box"><div class="stat-num">${s.peopleCount}</div><div class="stat-label">personnes</div></div>
+      <div class="stat-box"><div class="stat-num">${s.playlistCount}</div><div class="stat-label">playlists</div></div>
+      <div class="stat-box"><div class="stat-num">${s.totalLikes}</div><div class="stat-label">likes cumulés</div></div>
+      <div class="stat-box"><div class="stat-num">${s.totalPlays}</div><div class="stat-label">lectures dans l'appli</div></div>
+    </div>
+    <h3 class="display" style="font-size:15px;margin:20px 0 8px;">Ajouts par mois</h3>
+    ${barsHtml(s.addMonth)}
+    <h3 class="display" style="font-size:15px;margin:20px 0 8px;">Lectures par mois (dans l'appli)</h3>
+    ${barsHtml(s.playMonth)}
+    <h3 class="display" style="font-size:15px;margin:20px 0 8px;">Playlists</h3>
+    ${s.playlists.length? `<ol class="statlist">${s.playlists.map(p=>`<li>${escapeHtml(p.name)} <span class="mono">(${p.count} titres)</span></li>`).join('')}</ol>` : '<div class="hint">Aucune playlist créée.</div>'}
+    <h3 class="display" style="font-size:15px;margin:20px 0 8px;">Top titres écoutés ici</h3>
+    ${s.topPlayed.length? `<ol class="statlist">${s.topPlayed.map(t=>`<li>${escapeHtml(t.titre)} — ${escapeHtml(t.artiste)} <span class="mono">(${t.plays})</span></li>`).join('')}</ol>` : '<div class="hint">Pas encore de lecture enregistrée.</div>'}
+    <h3 class="display" style="font-size:15px;margin:20px 0 8px;">Titres les plus likés</h3>
+    ${s.topLiked.length? `<ol class="statlist">${s.topLiked.map(t=>`<li>${escapeHtml(t.titre)} — ${escapeHtml(t.artiste)} <span class="mono">(${(t.likes||[]).length})</span></li>`).join('')}</ol>` : '<div class="hint">Pas encore de like.</div>'}
+    <div class="hint" style="margin-top:16px;">Note : les plateformes ne publient pas de compteur d'écoutes global via API publique. « Lectures dans l'appli » compte uniquement les lectures lancées depuis Le Carnet.</div>
+  `;
+}
+el('statsBtn').onclick = ()=>{ renderStats(); el('statsOverlay').classList.add('open'); };
+el('statsCloseBtn').onclick = ()=> el('statsOverlay').classList.remove('open');
+el('statsOverlay').addEventListener('click', e=>{ if(e.target.id==='statsOverlay') el('statsOverlay').classList.remove('open'); });
+
+// ---------- toolbar bindings ----------
+el('searchInput').addEventListener('input', e=>{ state.search = e.target.value; render(); });
+el('groupSelect').addEventListener('change', e=>{ state.group = e.target.value; render(); });
+el('favToggle').addEventListener('click', ()=>{
+  if(!requirePseudo()) return;
+  state.favOnly = !state.favOnly;
+  el('favToggle').classList.toggle('active', state.favOnly);
+  render();
+});
+el('tagSortAlpha').onclick = ()=>{ state.tagSort='alpha'; render(); };
+el('tagSortCount').onclick = ()=>{ state.tagSort='count'; render(); };
+el('pseudoInput').addEventListener('change', async ()=>{ prefs.pseudo = el('pseudoInput').value.trim(); await savePrefs(); render(); });
+el('themeToggle').addEventListener('click', async ()=>{
+  prefs.darkMode = !prefs.darkMode;
+  document.body.setAttribute('data-theme', prefs.darkMode?'dark':'light');
+  el('themeToggle').querySelector('.knob').textContent = prefs.darkMode?'☀':'☾';
+  await savePrefs();
+  render();
+});
+el('colorToggle').addEventListener('click', async ()=>{
+  prefs.colorMode = !prefs.colorMode;
+  el('colorToggle').classList.toggle('active', prefs.colorMode);
+  await savePrefs();
+  render();
+});
+el('syncBtn').onclick = ()=>{ el('syncDetail').textContent=''; el('syncOverlay').classList.add('open'); };
+el('syncClose').onclick = ()=> el('syncOverlay').classList.remove('open');
+el('syncOverlay').addEventListener('click', e=>{ if(e.target.id==='syncOverlay') el('syncOverlay').classList.remove('open'); });
+el('syncCreateBtn').onclick = createSharedFile;
+el('syncLinkBtn').onclick = linkExistingFile;
+el('syncReconnectBtn').onclick = reconnectFile;
+el('syncUnlinkBtn').onclick = unlinkFile;
+if(!fsSupported){ el('syncCreateBtn').disabled = true; el('syncLinkBtn').disabled = true; el('syncCreateBtn').style.opacity='.4'; el('syncLinkBtn').style.opacity='.4'; }
+
+// ---------- init ----------
+(async function init(){
+  await initIDB();
+  await loadPrefs();
+  el('pseudoInput').value = prefs.pseudo||'';
+  document.body.setAttribute('data-theme', prefs.darkMode?'dark':'light');
+  el('themeToggle').querySelector('.knob').textContent = prefs.darkMode?'☀':'☾';
+  el('colorToggle').classList.toggle('active', !!prefs.colorMode);
+  await loadDB();
+  updateSyncStatus();
+  render();
+})();
+</script>
+</body>
+</html>
