@@ -29,7 +29,8 @@
       "id": "t1783380689451344",
       "likes": [
         "IwIp",
-        "Dimtri"
+        "Dimtri",
+        "Dimitri"
       ],
       "addedAt": 1783380689451,
       "plays": 8,
@@ -59,9 +60,7 @@
       "genre": "Jazz",
       "popularity": 288408,
       "id": "t1783458244267535",
-      "likes": [
-        "Dimitri"
-      ],
+      "likes": [],
       "addedAt": 1783458244267,
       "plays": 0,
       "playLog": []
