@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Carnet : v0.7</title>
+<title>Le Carnet : v0.8</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -188,7 +188,7 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
   <div class="top-inner">
     <div class="brand">
       <div class="disc"></div>
-      <div><h1 class="display">Le Carnet</h1><span class="tagline">titres partagés entre nous — v0.7</span></div>
+      <div><h1 class="display">Le Carnet</h1><span class="tagline">titres partagés entre nous — v0.8</span></div>
     </div>
     <div class="pseudo-field">
       <label for="pseudoInput">Toi</label>
@@ -211,13 +211,14 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
       <option value="proposePar">Grouper : par personne</option>
     </select>
     <button class="chip-btn" id="favToggle">★ Mes favoris</button>
-    <button class="chip-btn" id="syncBtn">🔗 Fichier partagé</button>
+    <button class="chip-btn" id="syncBtn" style="display:none;">🔗 Fichier partagé</button>
     <button class="chip-btn" id="playlistBtn">🎵 Playlists</button>
     <button class="chip-btn" id="statsBtn">📊 Stats</button>
     <button class="chip-btn" id="exportBtn">⇩ Exporter</button>
     <button class="chip-btn" id="importBtn">⇧ Importer</button>
     <input type="file" id="importInput" accept="application/json" style="display:none">
     <button class="chip-btn" id="loadRemoteBtn" title="Charger le catalogue distant">🌐 Catalogue distant</button>
+    <button class="chip-btn" id="githubSettingsBtn" title="Configurer l'accès GitHub">⚙️ Config GitHub</button>
     <button class="btn-primary" id="addBtn">＋ Ajouter un titre</button>
   </div>
 
@@ -275,21 +276,21 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
   </div>
 </div>
 
-<div class="overlay" id="syncOverlay">
+<div class="overlay" id="githubOverlay">
   <div class="modal">
-    <h2 class="display">Fichier partagé</h2>
-    <div class="hint">
-      Le Carnet n'a pas de serveur central : pour que plusieurs personnes voient les mêmes titres, on lit/écrit directement dans un fichier JSON que vous placez tous au même endroit (un dossier SharePoint/OneDrive synchronisé, un lecteur réseau, etc.) — un peu comme un fichier Excel partagé. Ce n'est pas du temps réel : si deux personnes modifient en même temps, la dernière sauvegarde l'emporte.
+    <h2 class="display">Configuration GitHub</h2>
+    <div class="hint" style="margin-bottom:14px; line-height:1.6;">
+      Pour sauvegarder directement tes ajouts sur le catalogue distant, entre ici un <strong>Personal Access Token (PAT)</strong> GitHub ayant les droits d'écriture sur le dépôt <code>IwipCo/CarnetMusical</code>.<br>
+      <em>Ce token reste 100% sécurisé en local dans ton navigateur.</em>
     </div>
-    <div id="syncDetail" class="hint" style="margin-bottom:14px;"></div>
-    <div class="modal-actions" style="justify-content:flex-start;flex-wrap:wrap;">
-      <button class="btn-small" id="syncCreateBtn">🆕 Créer le fichier ici</button>
-      <button class="btn-small" id="syncLinkBtn">📂 Lier un fichier existant</button>
-      <button class="btn-small" id="syncReconnectBtn" style="display:none;">🔄 Se reconnecter</button>
-      <button class="btn-small" id="syncUnlinkBtn" style="display:none;">✕ Délier</button>
+    <div class="field">
+      <label>Token GitHub (ghp_... ou github_pat_...)</label>
+      <input id="githubTokenInput" type="password" placeholder="Colle ton token ici">
     </div>
-    <div class="hint" style="margin-top:14px;">Fonctionne dans Chrome/Edge, en ouvrant ce fichier directement (pas depuis la fenêtre de chat de Claude.ai). Sur les autres navigateurs, ou si tu préfères, utilise Exporter / Importer dans la barre d'outils pour faire circuler manuellement le fichier de données.</div>
-    <div class="modal-actions"><button class="btn-secondary" id="syncClose">Fermer</button></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="githubCloseBtn">Fermer</button>
+      <button class="btn-primary" id="githubSaveBtn">Sauvegarder le token</button>
+    </div>
   </div>
 </div>
 
@@ -339,7 +340,7 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
 <script>
 const STORAGE_KEY = 'musicdb-v1';
 let DB = { tracks: [], favorites: {}, playlists: [] };
-let prefs = { pseudo: '', darkMode: false, colorMode: false };
+let prefs = { pseudo: '', darkMode: false, colorMode: false, githubToken: '' };
 let state = { search:'', sort:'titre', sortDir:'asc', group:'none', activeTags:new Set(), favOnly:false, playlistFilter:null, tagSort:'alpha', editingId:null, openEmbed:null, embedTab:{} };
 const SORT_FIELDS = [
   {key:'titre', label:'Titre', defaultDir:'asc', cmp:(a,b)=>a.titre.localeCompare(b.titre)},
@@ -354,13 +355,8 @@ let trackPlaylistContextId = null;
 
 const el = id => document.getElementById(id);
 
-
-// ---------- storage : cache local (IndexedDB) + fichier partagé (File System Access API) ----------
-const fsSupported = ('showOpenFilePicker' in window) && ('showSaveFilePicker' in window);
+// ---------- storage : cache local (IndexedDB) ----------
 let idbDB = null;
-let dbFileHandle = null;
-let needsReconnect = false;
-
 function openIDB(){
   return new Promise((resolve, reject)=>{
     if(!('indexedDB' in window)){ reject(new Error('no-indexeddb')); return; }
@@ -393,135 +389,118 @@ function idbSet(key, value){
   });
 }
 
-async function loadFromFileHandle(){
-  if(!dbFileHandle) return false;
-  try{
-    const file = await dbFileHandle.getFile();
-    const text = await file.text();
-    if(text && text.trim()){
-      const parsed = JSON.parse(text);
-      if(parsed && Array.isArray(parsed.tracks)){ DB = parsed; return true; }
-    }
-    return false;
-  }catch(e){ showToast('Lecture du fichier partagé impossible.'); return false; }
-}
-async function saveToFileHandle(){
-  if(!dbFileHandle) return false;
-  try{
-    const writable = await dbFileHandle.createWritable();
-    await writable.write(JSON.stringify(DB, null, 2));
-    await writable.close();
-    return true;
-  }catch(e){ showToast("Écriture dans le fichier partagé impossible (" + (e && e.message ? e.message : '') + ")."); return false; }
-}
-async function tryReconnectFileHandle(){
-  if(!fsSupported) return;
-  const handle = await idbGet('fileHandle');
-  if(!handle) return;
-  dbFileHandle = handle;
-  try{
-    const perm = await handle.queryPermission({mode:'readwrite'});
-    if(perm==='granted'){ needsReconnect=false; await loadFromFileHandle(); }
-    else { needsReconnect = true; }
-  }catch(e){ needsReconnect = true; }
-}
-async function linkExistingFile(){
-  if(!fsSupported){ showToast("Ton navigateur ne supporte pas cette fonction — utilise Export/Import."); return; }
-  try{
-    const [handle] = await window.showOpenFilePicker({
-      types:[{description:'Carnet musical (JSON)', accept:{'application/json':['.json']}}],
-    });
-    dbFileHandle = handle; needsReconnect = false;
-    await idbSet('fileHandle', handle);
-    const ok = await loadFromFileHandle();
-    if(!ok) await saveToFileHandle();
-    render();
-    updateSyncStatus();
-    showToast('Fichier lié : ' + handle.name);
-  }catch(e){ /* annulé par l'utilisateur */ }
-}
-async function createSharedFile(){
-  if(!fsSupported){ showToast("Ton navigateur ne supporte pas cette fonction — utilise Export/Import."); return; }
-  try{
-    const handle = await window.showSaveFilePicker({
-      suggestedName: 'carnet-musical-data.json',
-      types:[{description:'Carnet musical (JSON)', accept:{'application/json':['.json']}}],
-    });
-    dbFileHandle = handle; needsReconnect = false;
-    await idbSet('fileHandle', handle);
-    await saveToFileHandle();
-    updateSyncStatus();
-    showToast('Fichier créé et lié : ' + handle.name);
-  }catch(e){ /* annulé par l'utilisateur */ }
-}
-async function reconnectFile(){
-  if(!dbFileHandle) return;
-  try{
-    const perm = await dbFileHandle.requestPermission({mode:'readwrite'});
-    if(perm==='granted'){ needsReconnect=false; await loadFromFileHandle(); render(); updateSyncStatus(); showToast('Reconnecté.'); }
-    else showToast('Reconnexion refusée.');
-  }catch(e){ showToast('Reconnexion impossible.'); }
-}
-async function unlinkFile(){
-  dbFileHandle = null; needsReconnect = false;
-  await idbSet('fileHandle', null);
-  updateSyncStatus();
-  showToast('Fichier délié — le cache local de ce navigateur reste actif.');
-}
 function updateSyncStatus(){
   const line = el('syncLine');
-  const detail = el('syncDetail');
-  const reconnectBtn = el('syncReconnectBtn');
-  const unlinkBtn = el('syncUnlinkBtn');
-  reconnectBtn.style.display = needsReconnect ? 'inline-block' : 'none';
-  unlinkBtn.style.display = dbFileHandle ? 'inline-block' : 'none';
-  if(dbFileHandle && !needsReconnect){
+  if(prefs.githubToken){
     line.className = 'sync-line ok';
-    line.textContent = '🟢 Synchronisé avec ' + dbFileHandle.name + ' — chaque modification y est écrite directement.';
-    detail.textContent = 'Fichier lié : ' + dbFileHandle.name;
-    el('syncBtn').textContent = '🔗 ' + dbFileHandle.name;
-  } else if(dbFileHandle && needsReconnect){
-    line.className = 'sync-line warn';
-    line.textContent = '🟡 Fichier lié (' + dbFileHandle.name + ') mais accès à reconfirmer — clique sur « Fichier partagé » puis « Se reconnecter ».';
-    detail.textContent = "L'autorisation d'accès au fichier doit être reconfirmée après un rechargement de page.";
-    el('syncBtn').textContent = '🟡 Reconnexion requise';
-  } else if(fsSupported){
-    line.className = 'sync-line warn';
-    line.textContent = '⚪ Aucun fichier partagé lié — les ajouts restent en local à ce navigateur. Clique sur « Fichier partagé » pour en lier un (ex. dans un dossier SharePoint/OneDrive synchronisé).';
-    detail.textContent = "Pas encore de fichier lié.";
-    el('syncBtn').textContent = '🔗 Fichier partagé';
+    line.textContent = '🟢 Connecté à GitHub — Tes ajouts seront poussés sur le catalogue distant automatiquement.';
   } else {
     line.className = 'sync-line warn';
-    line.textContent = '⚪ Ce navigateur ne supporte pas la liaison directe de fichier — utilise Exporter / Importer pour partager tes données avec les autres.';
-    detail.textContent = 'Liaison directe non supportée sur ce navigateur (fonctionne sur Chrome/Edge).';
-    el('syncBtn').textContent = '⇩⇧ Exporter / Importer';
+    line.textContent = '⚪ Local uniquement — Clique sur "⚙️ Config GitHub" pour lier l\'application au dépôt distant.';
   }
 }
 
 async function loadDB(){
-  await tryReconnectFileHandle();
-  if(!DB || !DB.tracks){
-    const cached = await idbGet('musicdb');
-    DB = (cached && cached.tracks) ? cached : null;
-  }
+  const cached = await idbGet('musicdb');
+  DB = (cached && cached.tracks) ? cached : null;
   if(!DB || !DB.tracks){
     DB = { tracks: [], favorites: {}, playlists: [] };
   }
   if(!DB.favorites) DB.favorites = {};
   if(!DB.playlists) DB.playlists = [];
-  await saveDB();
+  await saveDB(false); // save structure locally
 }
-async function saveDB(){
+
+// Save DB locally and push to GitHub if authorized
+async function saveDB(pushToRemote = true){
   await idbSet('musicdb', DB);
-  if(dbFileHandle && !needsReconnect){ await saveToFileHandle(); }
-  updateSyncStatus();
+  if(pushToRemote && prefs.githubToken){
+    pushToGitHub(); // trigger in background
+  }
 }
+
 async function loadPrefs(){
   const cached = await idbGet('prefs');
-  prefs = cached || {pseudo:'',darkMode:false,colorMode:false};
+  prefs = cached || {pseudo:'', darkMode:false, colorMode:false, githubToken:''};
   if(prefs.colorMode===undefined) prefs.colorMode = false;
+  if(prefs.githubToken===undefined) prefs.githubToken = '';
 }
-async function savePrefs(){ await idbSet('prefs', prefs); }
+async function savePrefs(){ await idbSet('prefs', prefs); updateSyncStatus(); }
+
+// ---------- GitHub Push Logic ----------
+async function pushToGitHub() {
+  if (!prefs.githubToken) return;
+
+  const owner = 'IwipCo';
+  const repo = 'CarnetMusical';
+  const path = 'carnet-musical-data.json';
+  const branch = 'main';
+  const token = prefs.githubToken;
+
+  try {
+    showToast('⏳ Synchronisation GitHub en cours...');
+
+    // 1. Get current file SHA (Required by GitHub API to update a file)
+    const getUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
+    const getRes = await fetch(getUrl, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+
+    let sha = '';
+    if (getRes.ok) {
+      const getJson = await getRes.json();
+      sha = getJson.sha;
+    } else if (getRes.status !== 404) {
+      throw new Error('Erreur de lecture SHA (Token invalide ou sans droits?)');
+    }
+
+    // 2. Prepare payload
+    const contentStr = JSON.stringify(DB, null, 2);
+    // Base64 encode handling utf-8 accurately
+    const base64Content = btoa(unescape(encodeURIComponent(contentStr)));
+
+    const putPayload = {
+      message: `Mise à jour du carnet via Le Carnet Web App (par ${currentPseudo() || 'anonyme'})`,
+      content: base64Content,
+      branch: branch
+    };
+    if (sha) putPayload.sha = sha;
+
+    // 3. Put new content
+    const putRes = await fetch(getUrl, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(putPayload)
+    });
+
+    if (!putRes.ok) throw new Error('Erreur d\'écriture sur GitHub');
+
+    showToast('✅ Fichier sauvegardé sur GitHub avec succès !');
+  } catch (e) {
+    console.error("GitHub Push Error: ", e);
+    showToast('❌ Échec de la sauvegarde GitHub. Vérifie tes permissions de token.');
+  }
+}
+
+// GitHub settings modal
+el('githubSettingsBtn').onclick = () => {
+  el('githubTokenInput').value = prefs.githubToken || '';
+  el('githubOverlay').classList.add('open');
+};
+el('githubCloseBtn').onclick = () => el('githubOverlay').classList.remove('open');
+el('githubSaveBtn').onclick = async () => {
+  prefs.githubToken = el('githubTokenInput').value.trim();
+  await savePrefs();
+  el('githubOverlay').classList.remove('open');
+  showToast(prefs.githubToken ? 'Token enregistré localement.' : 'Token supprimé.');
+};
 
 
 // ---------- helpers ----------
@@ -710,7 +689,7 @@ async function recordPlay(id, fromYT){
   t.playLog = t.playLog||[];
   t.playLog.push(nowT);
   if(t.playLog.length>300) t.playLog = t.playLog.slice(-300);
-  await saveDB();
+  await saveDB(true);
 }
 
 // ---------- filtering / grouping ----------
@@ -913,7 +892,7 @@ window.toggleLike = async (id)=>{
   const i = t.likes.indexOf(pseudo);
   if(i>=0) t.likes.splice(i,1); else t.likes.push(pseudo);
   render();
-  await saveDB();
+  await saveDB(true);
 };
 window.toggleFav = async (id)=>{
   if(!requirePseudo()) return;
@@ -923,7 +902,7 @@ window.toggleFav = async (id)=>{
   const i = arr.indexOf(id);
   if(i>=0) arr.splice(i,1); else arr.push(id);
   render();
-  await saveDB();
+  await saveDB(true);
 };
 window.askDelete = (id)=>{ pendingDeleteId = id; el('confirmOverlay').classList.add('open'); };
 window.openEdit = (id)=>{
@@ -986,8 +965,10 @@ el('saveBtn').onclick = async ()=>{
   }
   el('overlay').classList.remove('open');
   render();
-  await saveDB();
-  showToast(dbFileHandle && !needsReconnect ? 'Enregistré dans le fichier partagé.' : 'Enregistré en local — pense à Exporter ou à lier un fichier partagé pour le diffuser.');
+  await saveDB(true);
+  if (!prefs.githubToken) {
+    showToast('Enregistré en local — Pense à configurer GitHub pour pousser tes ajouts.');
+  }
 };
 
 el('confirmCancel').onclick = ()=>{ el('confirmOverlay').classList.remove('open'); pendingDeleteId=null; };
@@ -999,7 +980,7 @@ el('confirmOk').onclick = async ()=>{
   }
   el('confirmOverlay').classList.remove('open'); pendingDeleteId = null;
   render();
-  await saveDB();
+  await saveDB(true);
 };
 
 // ---------- playlists ----------
@@ -1025,7 +1006,7 @@ window.toggleTrackInPlaylist = async (plId, checked)=>{
   if(!checked && idx>=0) pl.trackIds.splice(idx,1);
   renderTrackPlaylistList();
   render();
-  await saveDB();
+  await saveDB(true);
 };
 el('quickCreatePlaylistBtn').onclick = async ()=>{
   const name = el('quickPlaylistName').value.trim();
@@ -1035,7 +1016,7 @@ el('quickCreatePlaylistBtn').onclick = async ()=>{
   el('quickPlaylistName').value='';
   renderTrackPlaylistList();
   render();
-  await saveDB();
+  await saveDB(true);
 };
 el('trackPlaylistClose').onclick = ()=> el('trackPlaylistOverlay').classList.remove('open');
 el('trackPlaylistOverlay').addEventListener('click', e=>{ if(e.target.id==='trackPlaylistOverlay') el('trackPlaylistOverlay').classList.remove('open'); });
@@ -1055,7 +1036,7 @@ window.deletePlaylist = async (id)=>{
   if(state.playlistFilter===id) state.playlistFilter=null;
   renderPlaylistManageList();
   render();
-  await saveDB();
+  await saveDB(true);
 };
 el('createPlaylistBtn').onclick = async ()=>{
   const name = el('newPlaylistName').value.trim();
@@ -1065,7 +1046,7 @@ el('createPlaylistBtn').onclick = async ()=>{
   el('newPlaylistName').value='';
   renderPlaylistManageList();
   render();
-  await saveDB();
+  await saveDB(true);
 };
 el('playlistBtn').onclick = ()=>{ renderPlaylistManageList(); el('playlistManageOverlay').classList.add('open'); };
 el('playlistManageClose').onclick = ()=> el('playlistManageOverlay').classList.remove('open');
@@ -1108,8 +1089,8 @@ el('importInput').addEventListener('change', async (e)=>{
       });
     }
     render();
-    await saveDB();
-    showToast(`Import terminé : ${added} ajouté(s), ${skipped} déjà présent(s) ou ignoré(s).`);
+    await saveDB(true);
+    showToast(`Import terminé : ${added} ajouté(s), ${skipped} ignoré(s).`);
   }catch(err){
     showToast("Le fichier n'a pas le bon format.");
   }
@@ -1120,16 +1101,33 @@ el('importInput').addEventListener('change', async (e)=>{
 el('loadRemoteBtn').onclick = async ()=>{
   showToast('Téléchargement du catalogue distant...');
   try {
-    const response = await fetch('https://raw.githubusercontent.com/IwipCo/CarnetMusical/refs/heads/main/carnet-musical-data.json');
-    if (!response.ok) throw new Error('network');
-    const parsed = await response.json();
+    let parsed;
+    // Bypassing GitHub's 5 minutes cache if token is present by reading the API directly
+    if (prefs.githubToken) {
+        const response = await fetch(`https://api.github.com/repos/IwipCo/CarnetMusical/contents/carnet-musical-data.json?ref=main`, {
+          headers: { 'Authorization': `token ${prefs.githubToken}`, 'Accept': 'application/vnd.github.v3.raw' }
+        });
+        if (!response.ok) throw new Error('network-api');
+        parsed = await response.json();
+    } else {
+        const response = await fetch('https://raw.githubusercontent.com/IwipCo/CarnetMusical/refs/heads/main/carnet-musical-data.json');
+        if (!response.ok) throw new Error('network');
+        parsed = await response.json();
+    }
     
     if(!parsed.tracks || !Array.isArray(parsed.tracks)) throw new Error('format');
     
     let added = 0, skipped = 0;
     parsed.tracks.forEach(t => {
-      if(!t.id || DB.tracks.some(x => x.id === t.id)){ skipped++; return; }
-      DB.tracks.push(t); added++;
+      // Small check to replace if ID exists or skip, let's keep the basic skip behavior, or merge data
+      let existing = DB.tracks.find(x => x.id === t.id);
+      if (existing) {
+        // Option to merge or just skip
+        skipped++;
+      } else {
+        DB.tracks.push(t); 
+        added++;
+      }
     });
     
     if(parsed.favorites){
@@ -1147,7 +1145,7 @@ el('loadRemoteBtn').onclick = async ()=>{
     }
     
     render();
-    await saveDB();
+    await saveDB(false); // only local to prevent an infinite loop
     showToast(`Catalogue distant importé : ${added} ajouté(s), ${skipped} ignoré(s).`);
   } catch(err) {
     showToast("Erreur de téléchargement ou format du catalogue distant.");
@@ -1236,14 +1234,6 @@ el('colorToggle').addEventListener('click', async ()=>{
   await savePrefs();
   render();
 });
-el('syncBtn').onclick = ()=>{ el('syncDetail').textContent=''; el('syncOverlay').classList.add('open'); };
-el('syncClose').onclick = ()=> el('syncOverlay').classList.remove('open');
-el('syncOverlay').addEventListener('click', e=>{ if(e.target.id==='syncOverlay') el('syncOverlay').classList.remove('open'); });
-el('syncCreateBtn').onclick = createSharedFile;
-el('syncLinkBtn').onclick = linkExistingFile;
-el('syncReconnectBtn').onclick = reconnectFile;
-el('syncUnlinkBtn').onclick = unlinkFile;
-if(!fsSupported){ el('syncCreateBtn').disabled = true; el('syncLinkBtn').disabled = true; el('syncCreateBtn').style.opacity='.4'; el('syncLinkBtn').style.opacity='.4'; }
 
 // ---------- init ----------
 (async function init(){
