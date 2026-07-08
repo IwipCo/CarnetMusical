@@ -47,7 +47,9 @@
       "artiste": "cory henry",
       "annee": 2016,
       "proposePar": "Dimitri",
-      "tags": [],
+      "tags": [
+        "feelgood"
+      ],
       "spotify": "https://open.spotify.com/intl-fr/track/3Q94flBRFGAqaCrebWRbno?si=ad7ed0315d3448ea",
       "deezer": "https://www.deezer.com/track/860333322",
       "youtube": "",
@@ -61,7 +63,8 @@
       ],
       "addedAt": 1783458244267,
       "plays": 0,
-      "playLog": []
+      "playLog": [],
+      "updatedAt": 1783539837193
     },
     {
       "titre": "How can I tell you",
