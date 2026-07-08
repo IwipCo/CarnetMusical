@@ -434,33 +434,27 @@ async function pushToGitHub() {
   const owner = 'IwipCo';
   const repo = 'CarnetMusical';
   const path = 'carnet-musical-data.json';
-  
-  // 🔴 IMPORTANT : Verify your branch on GitHub. 
-  // If your default branch is 'master', change 'main' to 'master' below.
-  const branch = 'main'; 
+  const branch = 'main'; // Change to 'master' if your repository uses master
   const token = prefs.githubToken;
 
   try {
     showToast('⏳ Synchronisation GitHub en cours...');
 
-    const fileUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
+    const getUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
     
     // 1. Get current file SHA (Forced no-store to bypass browser cache)
-    const getRes = await fetch(fileUrl, {
+    const getRes = await fetch(getUrl, {
       method: 'GET',
       headers: {
         'Authorization': `token ${token}`,
         'Accept': 'application/vnd.github.v3+json'
       },
-      cache: 'no-store' // Fixes caching issues preventing SHA retrieval
+      cache: 'no-store' // <--- CRUCIAL FIX: Fixes caching issues preventing SHA retrieval
     });
 
     let sha = '';
     if (getRes.ok) {
       const getJson = await getRes.json();
-      if (Array.isArray(getJson)) {
-         throw new Error("Le chemin pointe vers un dossier, pas un fichier.");
-      }
       sha = getJson.sha;
       console.log("✅ SHA récupéré :", sha);
     } else if (getRes.status === 404) {
@@ -472,6 +466,7 @@ async function pushToGitHub() {
 
     // 2. Prepare payload
     const contentStr = JSON.stringify(DB, null, 2);
+    // Base64 encode handling utf-8 accurately
     const base64Content = btoa(unescape(encodeURIComponent(contentStr)));
 
     const putPayload = {
@@ -480,13 +475,13 @@ async function pushToGitHub() {
       branch: branch
     };
     
-    // Attach the SHA if the file already exists
+    // Safety check to avoid 422 error
     if (sha) {
       putPayload.sha = sha;
     }
 
     // 3. Put new content
-    const putRes = await fetch(fileUrl, {
+    const putRes = await fetch(getUrl, {
       method: 'PUT',
       headers: {
         'Authorization': `token ${token}`,
@@ -499,13 +494,13 @@ async function pushToGitHub() {
     if (!putRes.ok) {
       const errData = await putRes.json().catch(() => ({}));
       console.error("GitHub PUT Error:", errData);
-      throw new Error(`Rejeté par GitHub (${putRes.status}): ${errData.message}`);
+      throw new Error(`Rejeté par GitHub (${putRes.status}): ${errData.message || 'Erreur inconnue'}`);
     }
 
     showToast('✅ Fichier sauvegardé sur GitHub avec succès !');
   } catch (e) {
     console.error("GitHub Push Error: ", e);
-    showToast(`❌ Échec de la synchro : ${e.message}`);
+    showToast(`❌ Échec de la sauvegarde: ${e.message}`);
   }
 }
 
@@ -1125,7 +1120,8 @@ el('loadRemoteBtn').onclick = async ()=>{
     // Bypassing GitHub's 5 minutes cache if token is present by reading the API directly
     if (prefs.githubToken) {
         const response = await fetch(`https://api.github.com/repos/IwipCo/CarnetMusical/contents/carnet-musical-data.json?ref=main`, {
-          headers: { 'Authorization': `token ${prefs.githubToken}`, 'Accept': 'application/vnd.github.v3.raw' }
+          headers: { 'Authorization': `token ${prefs.githubToken}`, 'Accept': 'application/vnd.github.v3.raw' },
+          cache: 'no-store' // Fixes cache issues on download as well
         });
         if (!response.ok) throw new Error('network-api');
         parsed = await response.json();
@@ -1139,10 +1135,8 @@ el('loadRemoteBtn').onclick = async ()=>{
     
     let added = 0, skipped = 0;
     parsed.tracks.forEach(t => {
-      // Small check to replace if ID exists or skip, let's keep the basic skip behavior, or merge data
       let existing = DB.tracks.find(x => x.id === t.id);
       if (existing) {
-        // Option to merge or just skip
         skipped++;
       } else {
         DB.tracks.push(t); 
