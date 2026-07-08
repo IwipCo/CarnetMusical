@@ -56,7 +56,9 @@
       "genre": "Jazz",
       "popularity": 288408,
       "id": "t1783458244267535",
-      "likes": [],
+      "likes": [
+        "Dimitri"
+      ],
       "addedAt": 1783458244267,
       "plays": 0,
       "playLog": []
@@ -77,9 +79,7 @@
       "genre": "Reggae",
       "popularity": 128030,
       "id": "t1783499390502800",
-      "likes": [
-        "Dimitri"
-      ],
+      "likes": [],
       "addedAt": 1783499390502,
       "plays": 0,
       "playLog": []
@@ -98,9 +98,7 @@
       "genre": "Alternative",
       "popularity": 759619,
       "id": "t1783515642563936",
-      "likes": [
-        "Dimitri"
-      ],
+      "likes": [],
       "addedAt": 1783515642563,
       "plays": 0,
       "playLog": []
@@ -162,16 +160,14 @@
         "rock"
       ],
       "spotify": "",
-      "deezer": "https://www.deezer.com/track/3937217881",
+      "deezer": "",
       "youtube": "https://www.youtube.com/watch?v=-Bp6po9lHwo&list=RD-Bp6po9lHwo&start_radio=1",
       "jukebox": "",
-      "cover": "https://cdn-images.dzcdn.net/images/cover/ea9782202a27ecb386625846177f8f30/500x500-000000-80-0-0.jpg",
-      "genre": "Pop",
-      "popularity": 912075,
+      "cover": "",
+      "genre": "",
+      "popularity": null,
       "id": "t1783519996161193",
-      "likes": [
-        "Dimitri"
-      ],
+      "likes": [],
       "addedAt": 1783519996161,
       "plays": 1,
       "playLog": [
@@ -181,7 +177,8 @@
   ],
   "favorites": {
     "Dimitri": [
-      "t1783380689451344"
+      "t1783380689451344",
+      "t1783458244267535"
     ]
   },
   "playlists": [
@@ -192,6 +189,12 @@
         "t1783380689451344"
       ],
       "createdAt": 1783456777740
+    },
+    {
+      "id": "pl1783456793863756",
+      "name": "Pour Danser",
+      "trackIds": [],
+      "createdAt": 1783456793863
     }
   ]
 }
