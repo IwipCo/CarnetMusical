@@ -298,9 +298,7 @@
       "genre": "Alternative",
       "popularity": 759619,
       "id": "t1783515642563936",
-      "likes": [
-        "Eléa"
-      ],
+      "likes": [],
       "addedAt": 1783515642563,
       "plays": 0,
       "playLog": []
@@ -323,8 +321,10 @@
       "id": "t1783519764742115",
       "likes": [],
       "addedAt": 1783519764742,
-      "plays": 0,
-      "playLog": []
+      "plays": 1,
+      "playLog": [
+        1783520462511
+      ]
     },
     {
       "titre": "The catcher in the reye",
