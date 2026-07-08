@@ -434,28 +434,39 @@ async function pushToGitHub() {
   const owner = 'IwipCo';
   const repo = 'CarnetMusical';
   const path = 'carnet-musical-data.json';
-  const branch = 'main'; // Change to 'master' if your repo uses master
+  
+  // 🔴 IMPORTANT : Verify your branch on GitHub. 
+  // If your default branch is 'master', change 'main' to 'master' below.
+  const branch = 'main'; 
   const token = prefs.githubToken;
 
   try {
     showToast('⏳ Synchronisation GitHub en cours...');
 
-    // 1. Get current file SHA
-    const getUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
-    const getRes = await fetch(getUrl, {
+    const fileUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
+    
+    // 1. Get current file SHA (Forced no-store to bypass browser cache)
+    const getRes = await fetch(fileUrl, {
+      method: 'GET',
       headers: {
         'Authorization': `token ${token}`,
         'Accept': 'application/vnd.github.v3+json'
-      }
+      },
+      cache: 'no-store' // Fixes caching issues preventing SHA retrieval
     });
 
     let sha = '';
     if (getRes.ok) {
       const getJson = await getRes.json();
+      if (Array.isArray(getJson)) {
+         throw new Error("Le chemin pointe vers un dossier, pas un fichier.");
+      }
       sha = getJson.sha;
-    } else if (getRes.status !== 404) {
+      console.log("✅ SHA récupéré :", sha);
+    } else if (getRes.status === 404) {
+      console.log("ℹ️ Fichier non trouvé, création d'un nouveau fichier prévue.");
+    } else {
       const errData = await getRes.json().catch(() => ({}));
-      console.error("GitHub GET Error:", errData);
       throw new Error(`Lecture refusée (${getRes.status}): ${errData.message || 'Token invalide'}`);
     }
 
@@ -468,10 +479,14 @@ async function pushToGitHub() {
       content: base64Content,
       branch: branch
     };
-    if (sha) putPayload.sha = sha;
+    
+    // Attach the SHA if the file already exists
+    if (sha) {
+      putPayload.sha = sha;
+    }
 
     // 3. Put new content
-    const putRes = await fetch(getUrl, {
+    const putRes = await fetch(fileUrl, {
       method: 'PUT',
       headers: {
         'Authorization': `token ${token}`,
@@ -482,16 +497,15 @@ async function pushToGitHub() {
     });
 
     if (!putRes.ok) {
-      // 🚨 EXTRACT EXACT ERROR FROM GITHUB
       const errData = await putRes.json().catch(() => ({}));
       console.error("GitHub PUT Error:", errData);
-      throw new Error(`Rejeté par GitHub (${putRes.status}): ${errData.message || 'Vérifie les droits du Token'}`);
+      throw new Error(`Rejeté par GitHub (${putRes.status}): ${errData.message}`);
     }
 
     showToast('✅ Fichier sauvegardé sur GitHub avec succès !');
   } catch (e) {
     console.error("GitHub Push Error: ", e);
-    showToast(`❌ Échec: ${e.message}`);
+    showToast(`❌ Échec de la synchro : ${e.message}`);
   }
 }
 
