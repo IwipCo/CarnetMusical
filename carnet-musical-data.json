@@ -302,6 +302,27 @@
       "addedAt": 1783515642563,
       "plays": 0,
       "playLog": []
+    },
+    {
+      "titre": "Something Good",
+      "artiste": "ALT-J",
+      "annee": 2013,
+      "proposePar": "Eléa",
+      "tags": [
+        "envoutant"
+      ],
+      "spotify": "",
+      "deezer": "",
+      "youtube": "https://www.youtube.com/watch?v=aNYjOVo5IEw&list=RDaNYjOVo5IEw&start_radio=1",
+      "jukebox": "",
+      "cover": "",
+      "genre": "",
+      "popularity": null,
+      "id": "t1783519764742115",
+      "likes": [],
+      "addedAt": 1783519764742,
+      "plays": 0,
+      "playLog": []
     }
   ],
   "favorites": {
