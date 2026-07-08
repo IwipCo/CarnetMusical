@@ -98,7 +98,9 @@
       "genre": "Alternative",
       "popularity": 759619,
       "id": "t1783515642563936",
-      "likes": [],
+      "likes": [
+        "Dimitri"
+      ],
       "addedAt": 1783515642563,
       "plays": 0,
       "playLog": []
