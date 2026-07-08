@@ -28,32 +28,6 @@
       "jukebox": ""
     },
     {
-      "id": "t9",
-      "titre": "La Vie en rose",
-      "artiste": "Édith Piaf",
-      "annee": 1947,
-      "proposePar": "Sofia",
-      "spotify": "",
-      "deezer": "https://www.deezer.com/track/73693857",
-      "youtube": "",
-      "tags": [
-        "calme",
-        "love",
-        "francais"
-      ],
-      "likes": [
-        "Alice"
-      ],
-      "addedAt": 1782518662908,
-      "cover": "https://cdn-images.dzcdn.net/images/cover/6e6dde2c332dcb75e76f302f19de636c/500x500-000000-80-0-0.jpg",
-      "genre": "",
-      "popularity": 707624,
-      "similar": [],
-      "plays": 0,
-      "playLog": [],
-      "jukebox": ""
-    },
-    {
       "id": "t12",
       "titre": "On the Road Again",
       "artiste": "Willie Nelson",
