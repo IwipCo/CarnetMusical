@@ -1,34 +1,6 @@
 {
   "tracks": [
     {
-      "id": "t3",
-      "titre": "Blinding Lights",
-      "artiste": "The Weeknd",
-      "annee": 2019,
-      "proposePar": "Karim",
-      "spotify": "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b",
-      "deezer": "https://www.deezer.com/track/908604612",
-      "youtube": "https://www.youtube.com/watch?v=4NRXx6U8ABQ",
-      "tags": [
-        "route",
-        "soirée",
-        "electro"
-      ],
-      "likes": [
-        "Marc"
-      ],
-      "addedAt": 1777334662908,
-      "cover": "https://cdn-images.dzcdn.net/images/cover/fd00ebd6d30d7253f813dba3bb1c66a9/500x500-000000-80-0-0.jpg",
-      "genre": "R&B",
-      "popularity": 984833,
-      "similar": [],
-      "plays": 5,
-      "playLog": [
-        1781222662908
-      ],
-      "jukebox": ""
-    },
-    {
       "id": "t4",
       "titre": "Dernière danse",
       "artiste": "Indila",
@@ -386,8 +358,7 @@
     "Dimitri": [
       "t1783380689451344",
       "t1783458244267535",
-      "t8",
-      "t3"
+      "t8"
     ]
   },
   "playlists": [
