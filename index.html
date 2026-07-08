@@ -434,13 +434,13 @@ async function pushToGitHub() {
   const owner = 'IwipCo';
   const repo = 'CarnetMusical';
   const path = 'carnet-musical-data.json';
-  const branch = 'main';
+  const branch = 'main'; // Change to 'master' if your repo uses master
   const token = prefs.githubToken;
 
   try {
     showToast('⏳ Synchronisation GitHub en cours...');
 
-    // 1. Get current file SHA (Required by GitHub API to update a file)
+    // 1. Get current file SHA
     const getUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
     const getRes = await fetch(getUrl, {
       headers: {
@@ -454,12 +454,13 @@ async function pushToGitHub() {
       const getJson = await getRes.json();
       sha = getJson.sha;
     } else if (getRes.status !== 404) {
-      throw new Error('Erreur de lecture SHA (Token invalide ou sans droits?)');
+      const errData = await getRes.json().catch(() => ({}));
+      console.error("GitHub GET Error:", errData);
+      throw new Error(`Lecture refusée (${getRes.status}): ${errData.message || 'Token invalide'}`);
     }
 
     // 2. Prepare payload
     const contentStr = JSON.stringify(DB, null, 2);
-    // Base64 encode handling utf-8 accurately
     const base64Content = btoa(unescape(encodeURIComponent(contentStr)));
 
     const putPayload = {
@@ -480,12 +481,17 @@ async function pushToGitHub() {
       body: JSON.stringify(putPayload)
     });
 
-    if (!putRes.ok) throw new Error('Erreur d\'écriture sur GitHub');
+    if (!putRes.ok) {
+      // 🚨 EXTRACT EXACT ERROR FROM GITHUB
+      const errData = await putRes.json().catch(() => ({}));
+      console.error("GitHub PUT Error:", errData);
+      throw new Error(`Rejeté par GitHub (${putRes.status}): ${errData.message || 'Vérifie les droits du Token'}`);
+    }
 
     showToast('✅ Fichier sauvegardé sur GitHub avec succès !');
   } catch (e) {
     console.error("GitHub Push Error: ", e);
-    showToast('❌ Échec de la sauvegarde GitHub. Vérifie tes permissions de token.');
+    showToast(`❌ Échec: ${e.message}`);
   }
 }
 
