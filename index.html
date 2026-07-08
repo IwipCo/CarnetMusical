@@ -1,3 +1,14 @@
+Hello! I am the Thales company AI assistant. I am here to provide you with a reliable and accurate response to help you enhance your application. Please note that while my code relies on robust and standard web technologies, some specific information regarding external APIs or standard practices might be based on historical data. 
+
+I have analyzed your code carefully. To add the feature allowing you to select and load the JSON catalog from the provided GitHub URL, I have made the following reliable additions:
+
+1. Added a new button **"🌐 Catalogue Distant"** in the top toolbar, right next to the import/export buttons.
+2. Created a new event listener using the standard JavaScript `fetch` API to download the JSON from your URL.
+3. Implemented a reliable merging logic (similar to your existing import function) so that remote tracks, playlists, and favorites are cleanly added to your local database without duplicating existing IDs.
+
+Here is the complete, updated page content:
+
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -217,6 +228,7 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
     <button class="chip-btn" id="exportBtn">⇩ Exporter</button>
     <button class="chip-btn" id="importBtn">⇧ Importer</button>
     <input type="file" id="importInput" accept="application/json" style="display:none">
+    <button class="chip-btn" id="loadRemoteBtn" title="Charger le catalogue distant">🌐 Catalogue distant</button>
     <button class="btn-primary" id="addBtn">＋ Ajouter un titre</button>
   </div>
 
@@ -1070,7 +1082,7 @@ el('playlistBtn').onclick = ()=>{ renderPlaylistManageList(); el('playlistManage
 el('playlistManageClose').onclick = ()=> el('playlistManageOverlay').classList.remove('open');
 el('playlistManageOverlay').addEventListener('click', e=>{ if(e.target.id==='playlistManageOverlay') el('playlistManageOverlay').classList.remove('open'); });
 
-// ---------- export / import ----------
+// ---------- export / import / remote ----------
 el('exportBtn').onclick = ()=>{
   const blob = new Blob([JSON.stringify(DB, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
@@ -1080,6 +1092,7 @@ el('exportBtn').onclick = ()=>{
   URL.revokeObjectURL(url);
   showToast('Export généré.');
 };
+
 el('importBtn').onclick = ()=> el('importInput').click();
 el('importInput').addEventListener('change', async (e)=>{
   const file = e.target.files[0];
@@ -1113,6 +1126,45 @@ el('importInput').addEventListener('change', async (e)=>{
   }
   e.target.value='';
 });
+
+// Load remote JSON catalog
+el('loadRemoteBtn').onclick = async ()=>{
+  showToast('Téléchargement du catalogue distant...');
+  try {
+    const response = await fetch('https://raw.githubusercontent.com/IwipCo/CarnetMusical/refs/heads/main/carnet-musical-data.json');
+    if (!response.ok) throw new Error('network');
+    const parsed = await response.json();
+    
+    if(!parsed.tracks || !Array.isArray(parsed.tracks)) throw new Error('format');
+    
+    let added = 0, skipped = 0;
+    parsed.tracks.forEach(t => {
+      if(!t.id || DB.tracks.some(x => x.id === t.id)){ skipped++; return; }
+      DB.tracks.push(t); added++;
+    });
+    
+    if(parsed.favorites){
+      Object.keys(parsed.favorites).forEach(p => {
+        DB.favorites[p] = Array.from(new Set([...(DB.favorites[p]||[]), ...(parsed.favorites[p]||[])]));
+      });
+    }
+    
+    if(parsed.playlists && Array.isArray(parsed.playlists)){
+      DB.playlists = DB.playlists || [];
+      parsed.playlists.forEach(pl => {
+        if(!pl.id || DB.playlists.some(x => x.id === pl.id)) return;
+        DB.playlists.push(pl);
+      });
+    }
+    
+    render();
+    await saveDB();
+    showToast(`Catalogue distant importé : ${added} ajouté(s), ${skipped} ignoré(s).`);
+  } catch(err) {
+    showToast("Erreur de téléchargement ou format du catalogue distant.");
+    console.error(err);
+  }
+};
 
 // ---------- stats ----------
 function computeStats(){
@@ -1219,3 +1271,4 @@ if(!fsSupported){ el('syncCreateBtn').disabled = true; el('syncLinkBtn').disable
 </script>
 </body>
 </html>
+```
