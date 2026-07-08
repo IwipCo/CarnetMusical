@@ -1,202 +1,6 @@
 {
   "tracks": [
     {
-      "id": "t3",
-      "titre": "Blinding Lights",
-      "artiste": "The Weeknd",
-      "annee": 2019,
-      "proposePar": "Karim",
-      "spotify": "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b",
-      "deezer": "https://www.deezer.com/track/908604612",
-      "youtube": "https://www.youtube.com/watch?v=4NRXx6U8ABQ",
-      "tags": [
-        "route",
-        "soirée",
-        "electro"
-      ],
-      "likes": [
-        "Marc"
-      ],
-      "addedAt": 1777334662908,
-      "cover": "https://cdn-images.dzcdn.net/images/cover/fd00ebd6d30d7253f813dba3bb1c66a9/500x500-000000-80-0-0.jpg",
-      "genre": "R&B",
-      "popularity": 984833,
-      "similar": [],
-      "plays": 5,
-      "playLog": [
-        1781222662908
-      ],
-      "jukebox": ""
-    },
-    {
-      "id": "t4",
-      "titre": "Dernière danse",
-      "artiste": "Indila",
-      "annee": 2014,
-      "proposePar": "Sofia",
-      "spotify": "",
-      "deezer": "https://www.deezer.com/track/79196991",
-      "youtube": "https://www.youtube.com/watch?v=K5KAc5CoCuk",
-      "tags": [
-        "nostalgie",
-        "francais",
-        "calme"
-      ],
-      "likes": [
-        "Alice",
-        "Marc",
-        "Sofia"
-      ],
-      "addedAt": 1778198662908,
-      "cover": "https://cdn-images.dzcdn.net/images/cover/b060e7699e47c1771ebda29b25c1ea8d/500x500-000000-80-0-0.jpg",
-      "genre": "Alternative",
-      "popularity": 26369,
-      "similar": [
-        "Love Story",
-        "Tourner dans le vide"
-      ],
-      "plays": 11,
-      "playLog": [
-        1780358662908,
-        1782086662908,
-        1783209862908
-      ],
-      "jukebox": ""
-    },
-    {
-      "id": "t5",
-      "titre": "Levitating",
-      "artiste": "Dua Lipa",
-      "annee": 2020,
-      "proposePar": "Alice",
-      "spotify": "https://open.spotify.com/track/463CkQjx2Zk1yXoBuierM9",
-      "deezer": "https://www.deezer.com/track/1122003492",
-      "youtube": "",
-      "tags": [
-        "été",
-        "danse",
-        "workout"
-      ],
-      "likes": [],
-      "addedAt": 1779062662908,
-      "cover": "https://cdn-images.dzcdn.net/images/cover/24bd258ef3f363d8fb2621f396a23ea1/500x500-000000-80-0-0.jpg",
-      "genre": "Pop",
-      "popularity": 559497,
-      "similar": [],
-      "plays": 0,
-      "playLog": [],
-      "jukebox": ""
-    },
-    {
-      "id": "t6",
-      "titre": "Papaoutai",
-      "artiste": "Stromae",
-      "annee": 2013,
-      "proposePar": "Karim",
-      "spotify": "https://open.spotify.com/track/6Qb7Cy0KwSTVNsimGkT9NX",
-      "deezer": "https://www.deezer.com/track/69879250",
-      "youtube": "",
-      "tags": [
-        "francais",
-        "nostalgie"
-      ],
-      "likes": [
-        "Sofia"
-      ],
-      "addedAt": 1779926662908,
-      "cover": "https://cdn-images.dzcdn.net/images/cover/914db9146f330d0a2969d157872da5eb/500x500-000000-80-0-0.jpg",
-      "genre": "Pop",
-      "popularity": 879562,
-      "similar": [],
-      "plays": 3,
-      "playLog": [
-        1782345862908
-      ],
-      "jukebox": ""
-    },
-    {
-      "id": "t8",
-      "titre": "Eye of the Tiger",
-      "artiste": "Survivor",
-      "annee": 1982,
-      "proposePar": "Karim",
-      "spotify": "",
-      "deezer": "https://www.deezer.com/track/576431",
-      "youtube": "https://www.youtube.com/watch?v=btPJPFnesV4",
-      "tags": [
-        "workout",
-        "motivation",
-        "annees80"
-      ],
-      "likes": [
-        "Marc",
-        "Alice"
-      ],
-      "addedAt": 1781654662908,
-      "cover": "https://cdn-images.dzcdn.net/images/cover/e66b5d3a40f69690c1633afb73cc590c/500x500-000000-80-0-0.jpg",
-      "genre": "Films/Jeux vidéo",
-      "popularity": 898987,
-      "similar": [],
-      "plays": 6,
-      "playLog": [
-        1782691462908,
-        1783296262908
-      ],
-      "jukebox": ""
-    },
-    {
-      "id": "t9",
-      "titre": "La Vie en rose",
-      "artiste": "Édith Piaf",
-      "annee": 1947,
-      "proposePar": "Sofia",
-      "spotify": "",
-      "deezer": "https://www.deezer.com/track/73693857",
-      "youtube": "",
-      "tags": [
-        "calme",
-        "love",
-        "francais"
-      ],
-      "likes": [
-        "Alice"
-      ],
-      "addedAt": 1782518662908,
-      "cover": "https://cdn-images.dzcdn.net/images/cover/6e6dde2c332dcb75e76f302f19de636c/500x500-000000-80-0-0.jpg",
-      "genre": "",
-      "popularity": 707624,
-      "similar": [],
-      "plays": 0,
-      "playLog": [],
-      "jukebox": ""
-    },
-    {
-      "id": "t12",
-      "titre": "On the Road Again",
-      "artiste": "Willie Nelson",
-      "annee": 1980,
-      "proposePar": "Karim",
-      "spotify": "",
-      "deezer": "https://www.deezer.com/track/1139648532",
-      "youtube": "",
-      "tags": [
-        "route",
-        "road-trip",
-        "annees80"
-      ],
-      "likes": [
-        "Marc"
-      ],
-      "addedAt": 1783296262908,
-      "cover": "https://cdn-images.dzcdn.net/images/cover/29c268517c9b242252bb2615180f8efe/500x500-000000-80-0-0.jpg",
-      "genre": "",
-      "popularity": 605653,
-      "similar": [],
-      "plays": 0,
-      "playLog": [],
-      "jukebox": ""
-    },
-    {
       "titre": "Just Jammin",
       "artiste": "Gramatik",
       "annee": 2015,
@@ -224,8 +28,6 @@
       ],
       "id": "t1783380689451344",
       "likes": [
-        "IwIp",
-        "Dimtri",
         "Dimitri"
       ],
       "addedAt": 1783380689451,
@@ -314,12 +116,12 @@
         "envoutant"
       ],
       "spotify": "",
-      "deezer": "",
+      "deezer": "https://www.deezer.com/track/3809258472",
       "youtube": "https://www.youtube.com/watch?v=aNYjOVo5IEw&list=RDaNYjOVo5IEw&start_radio=1",
       "jukebox": "",
-      "cover": "",
-      "genre": "",
-      "popularity": null,
+      "cover": "https://cdn-images.dzcdn.net/images/cover/86ad6511178304fa3df49f716fdb4964/500x500-000000-80-0-0.jpg",
+      "genre": "Alternative",
+      "popularity": 631779,
       "id": "t1783519764742115",
       "likes": [],
       "addedAt": 1783519764742,
@@ -327,20 +129,20 @@
       "playLog": []
     },
     {
-      "titre": "The catcher in the rey",
+      "titre": "The catcher in the rye",
       "artiste": "Elephanz",
-      "annee": null,
+      "annee": 2017,
       "proposePar": "Eléa",
       "tags": [
         "chill"
       ],
       "spotify": "",
-      "deezer": "",
+      "deezer": "https://www.deezer.com/track/403816142",
       "youtube": "https://www.youtube.com/watch?v=hmPt_d7YcAc",
       "jukebox": "",
-      "cover": "",
-      "genre": "",
-      "popularity": null,
+      "cover": "https://cdn-images.dzcdn.net/images/cover/ea6b94657305f2e75864140650feb91d/500x500-000000-80-0-0.jpg",
+      "genre": "Alternative",
+      "popularity": 541972,
       "id": "t1783519943662157",
       "likes": [],
       "addedAt": 1783519943662,
@@ -370,18 +172,11 @@
     }
   ],
   "favorites": {
-    "IwIp": [
-      "t1783380689451344",
-      "t6"
-    ],
-    "Dimtri": [
-      "t1783380689451344"
-    ],
+    "IwIp": [],
+    "Dimtri": [],
     "Dimitri": [
       "t1783380689451344",
-      "t1783458244267535",
-      "t8",
-      "t3"
+      "t1783458244267535"
     ]
   },
   "playlists": [
@@ -396,9 +191,7 @@
     {
       "id": "pl1783456793863756",
       "name": "Pour Danser",
-      "trackIds": [
-        "t5"
-      ],
+      "trackIds": [],
       "createdAt": 1783456793863
     }
   ]
