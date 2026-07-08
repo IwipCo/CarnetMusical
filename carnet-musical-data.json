@@ -87,36 +87,6 @@
       "jukebox": ""
     },
     {
-      "id": "t8",
-      "titre": "Eye of the Tiger",
-      "artiste": "Survivor",
-      "annee": 1982,
-      "proposePar": "Karim",
-      "spotify": "",
-      "deezer": "https://www.deezer.com/track/576431",
-      "youtube": "https://www.youtube.com/watch?v=btPJPFnesV4",
-      "tags": [
-        "workout",
-        "motivation",
-        "annees80"
-      ],
-      "likes": [
-        "Marc",
-        "Alice"
-      ],
-      "addedAt": 1781654662908,
-      "cover": "https://cdn-images.dzcdn.net/images/cover/e66b5d3a40f69690c1633afb73cc590c/500x500-000000-80-0-0.jpg",
-      "genre": "Films/Jeux vidéo",
-      "popularity": 898987,
-      "similar": [],
-      "plays": 6,
-      "playLog": [
-        1782691462908,
-        1783296262908
-      ],
-      "jukebox": ""
-    },
-    {
       "id": "t9",
       "titre": "La Vie en rose",
       "artiste": "Édith Piaf",
@@ -357,8 +327,7 @@
     ],
     "Dimitri": [
       "t1783380689451344",
-      "t1783458244267535",
-      "t8"
+      "t1783458244267535"
     ]
   },
   "playlists": [
