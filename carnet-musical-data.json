@@ -81,8 +81,10 @@
       "id": "t1783499390502800",
       "likes": [],
       "addedAt": 1783499390502,
-      "plays": 0,
-      "playLog": []
+      "plays": 1,
+      "playLog": [
+        1783538102034
+      ]
     },
     {
       "titre": "nantes",
@@ -123,8 +125,10 @@
       "id": "t1783519764742115",
       "likes": [],
       "addedAt": 1783519764742,
-      "plays": 0,
-      "playLog": []
+      "plays": 1,
+      "playLog": [
+        1783538077647
+      ]
     },
     {
       "titre": "The catcher in the rye",
@@ -165,6 +169,31 @@
       "id": "t1783523680471672",
       "likes": [],
       "addedAt": 1783523680471,
+      "plays": 0,
+      "playLog": []
+    },
+    {
+      "titre": "Ray Charles",
+      "artiste": "Cee-Roo",
+      "annee": 2012,
+      "proposePar": "Dimitri",
+      "tags": [
+        "remix",
+        "feelgood"
+      ],
+      "spotify": "",
+      "deezer": "",
+      "youtube": "https://www.youtube.com/watch?v=QVbeF5X1xOQ&list=PLni8l6DDw8sTC4edvRwmJME2pJs5wXGNO&index=5",
+      "jukebox": "",
+      "cover": "",
+      "genre": "",
+      "popularity": null,
+      "updatedAt": 1783539059578,
+      "id": "t1783539050888482",
+      "likes": [
+        "Dimitri"
+      ],
+      "addedAt": 1783539050888,
       "plays": 0,
       "playLog": []
     }
