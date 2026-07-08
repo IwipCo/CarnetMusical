@@ -79,7 +79,9 @@
       "genre": "Reggae",
       "popularity": 128030,
       "id": "t1783499390502800",
-      "likes": [],
+      "likes": [
+        "Dimitri"
+      ],
       "addedAt": 1783499390502,
       "plays": 0,
       "playLog": []
