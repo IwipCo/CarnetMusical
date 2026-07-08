@@ -325,6 +325,27 @@
       "addedAt": 1783519764742,
       "plays": 0,
       "playLog": []
+    },
+    {
+      "titre": "The catcher in the reye",
+      "artiste": "Elephanz",
+      "annee": null,
+      "proposePar": "Eléa",
+      "tags": [
+        "chill"
+      ],
+      "spotify": "",
+      "deezer": "",
+      "youtube": "https://www.youtube.com/watch?v=hmPt_d7YcAc",
+      "jukebox": "",
+      "cover": "",
+      "genre": "",
+      "popularity": null,
+      "id": "t1783519943662157",
+      "likes": [],
+      "addedAt": 1783519943662,
+      "plays": 0,
+      "playLog": []
     }
   ],
   "favorites": {
