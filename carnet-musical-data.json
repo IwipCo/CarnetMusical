@@ -12,7 +12,7 @@
       ],
       "spotify": "https://open.spotify.com/intl-fr/track/0h7JPd0usccTo7EoCXiNck?si=e8e67e4625244ee4",
       "deezer": "https://www.deezer.com/track/2594899332",
-      "youtube": "",
+      "youtube": "https://www.youtube.com/watch?v=5vqXhPxdiC0",
       "amazon": "",
       "eternal": "https://eternalbox.floriegl.tech/jukebox_go.html?id=7HTezuWuwD7q5k4Z4AVhaS&sq=0",
       "cover": "https://cdn-images.dzcdn.net/images/cover/9c0a6668f0147782e14516094d3860c5/500x500-000000-80-0-0.jpg",
@@ -40,7 +40,8 @@
         1783497932688,
         1783511163015
       ],
-      "jukebox": "https://eternalbox.floriegl.tech/jukebox_go.html?id=7HTezuWuwD7q5k4Z4AVhaS&sq=0"
+      "jukebox": "https://eternalbox.floriegl.tech/jukebox_go.html?id=7HTezuWuwD7q5k4Z4AVhaS&sq=0",
+      "updatedAt": 1783540358154
     },
     {
       "titre": "naanaanaa",
