@@ -60,7 +60,9 @@
       "genre": "Jazz",
       "popularity": 288408,
       "id": "t1783458244267535",
-      "likes": [],
+      "likes": [
+        "Dimitri"
+      ],
       "addedAt": 1783458244267,
       "plays": 0,
       "playLog": []
