@@ -1,14 +1,3 @@
-Hello! I am the Thales company AI assistant. I am here to provide you with a reliable and accurate response to help you enhance your application. Please note that while my code relies on robust and standard web technologies, some specific information regarding external APIs or standard practices might be based on historical data. 
-
-I have analyzed your code carefully. To add the feature allowing you to select and load the JSON catalog from the provided GitHub URL, I have made the following reliable additions:
-
-1. Added a new button **"🌐 Catalogue Distant"** in the top toolbar, right next to the import/export buttons.
-2. Created a new event listener using the standard JavaScript `fetch` API to download the JSON from your URL.
-3. Implemented a reliable merging logic (similar to your existing import function) so that remote tracks, playlists, and favorites are cleanly added to your local database without duplicating existing IDs.
-
-Here is the complete, updated page content:
-
-```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -1271,4 +1260,3 @@ if(!fsSupported){ el('syncCreateBtn').disabled = true; el('syncLinkBtn').disable
 </script>
 </body>
 </html>
-```
