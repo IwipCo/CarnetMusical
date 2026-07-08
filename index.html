@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Carnet : v0.8</title>
+<title>Le Carnet : v0.10</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -69,6 +69,7 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
 .btn-primary{background:var(--ink);color:var(--bg);border:none;border-radius:var(--radius);padding:10px 16px;font-size:14px;font-weight:600;}
 [data-theme="dark"] .btn-primary{background:var(--accent);color:var(--accent-ink);}
 .btn-primary:hover{opacity:.88;}
+.btn-add-big{width:100%;padding:16px;font-size:17px;margin:18px 0 6px;border-radius:6px;}
 
 .subrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
 .subrow .lbl{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.05em;}
@@ -188,7 +189,7 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
   <div class="top-inner">
     <div class="brand">
       <div class="disc"></div>
-      <div><h1 class="display">Le Carnet</h1><span class="tagline">titres partagés entre nous — v0.8</span></div>
+      <div><h1 class="display">Le Carnet</h1><span class="tagline">titres partagés entre nous — v0.10</span></div>
     </div>
     <div class="pseudo-field">
       <label for="pseudoInput">Toi</label>
@@ -201,6 +202,9 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
 
 <div class="wrap">
   <div class="sync-line" id="syncLine">Vérification de la synchronisation…</div>
+
+  <button class="btn-primary btn-add-big" id="addBtn">＋ Ajouter un titre</button>
+
   <div class="toolbar">
     <div class="search-box"><input type="text" id="searchInput" placeholder="   Chercher un titre, un artiste, un tag…"></div>
     <div class="sort-row" id="sortRow"></div>
@@ -210,16 +214,18 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
       <option value="tag">Grouper : par tag</option>
       <option value="proposePar">Grouper : par personne</option>
     </select>
+  </div>
+
+  <div class="toolbar">
     <button class="chip-btn" id="favToggle">★ Mes favoris</button>
-    <button class="chip-btn" id="syncBtn" style="display:none;">🔗 Fichier partagé</button>
     <button class="chip-btn" id="playlistBtn">🎵 Playlists</button>
     <button class="chip-btn" id="statsBtn">📊 Stats</button>
-    <button class="chip-btn" id="exportBtn">⇩ Exporter</button>
-    <button class="chip-btn" id="importBtn">⇧ Importer</button>
-    <input type="file" id="importInput" accept="application/json" style="display:none">
     <button class="chip-btn" id="loadRemoteBtn" title="Charger le catalogue distant">🌐 Catalogue distant</button>
     <button class="chip-btn" id="githubSettingsBtn" title="Configurer l'accès GitHub">⚙️ Config GitHub</button>
-    <button class="btn-primary" id="addBtn">＋ Ajouter un titre</button>
+    <button class="chip-btn" id="syncBtn" style="display:none;">🔗 Fichier partagé</button>
+    <button class="chip-btn" id="exportBtn" style="display:none;">⇩ Exporter</button>
+    <button class="chip-btn" id="importBtn" style="display:none;">⇧ Importer</button>
+    <input type="file" id="importInput" accept="application/json" style="display:none">
   </div>
 
   <div class="subrow">
@@ -244,7 +250,7 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
       <div class="field"><label>Artiste</label><input id="f_artiste" type="text"></div>
       <div class="field"><label>Année</label><input id="f_annee" type="text" inputmode="numeric" maxlength="4"></div>
     </div>
-    <div class="field"><label>Proposé par</label><input id="f_proposePar" type="text"></div>
+    <div class="field"><label>Proposé par</label><input id="f_proposePar" type="text"><div class="hint" id="proposeParHint"></div></div>
     <div class="field"><label>Tags (séparés par une virgule)</label><input id="f_tags" type="text" placeholder="chill, soirée, route…"></div>
     <div class="row2">
       <div class="field"><label>Lien Spotify</label><input id="f_spotify" type="text" placeholder="https://open.spotify.com/track/…"></div>
@@ -339,6 +345,7 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 const STORAGE_KEY = 'musicdb-v1';
+const MAX_TRACKS_PER_PERSON = 10;
 let DB = { tracks: [], favorites: {}, playlists: [] };
 let prefs = { pseudo: '', darkMode: false, colorMode: false, githubToken: '' };
 let state = { search:'', sort:'titre', sortDir:'asc', group:'none', activeTags:new Set(), favOnly:false, playlistFilter:null, tagSort:'alpha', editingId:null, openEmbed:null, embedTab:{} };
@@ -407,6 +414,7 @@ async function loadDB(){
     DB = { tracks: [], favorites: {}, playlists: [] };
   }
   if(!DB.favorites) DB.favorites = {};
+  if(!DB.favoritesMeta) DB.favoritesMeta = {};
   if(!DB.playlists) DB.playlists = [];
   await saveDB(false); // save structure locally
 }
@@ -427,64 +435,152 @@ async function loadPrefs(){
 }
 async function savePrefs(){ await idbSet('prefs', prefs); updateSyncStatus(); }
 
-// ---------- GitHub Push Logic ----------
-async function pushToGitHub() {
-  if (!prefs.githubToken) return;
+// ---------- Fusion (merge) des données distantes et locales ----------
+function normName(s){ return (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
 
-  const owner = 'IwipCo';
-  const repo = 'CarnetMusical';
-  const path = 'carnet-musical-data.json';
-  const branch = 'main'; // Change to 'master' if your repository uses master
-  const token = prefs.githubToken;
+function mergeDB(remote, local){
+  remote = remote || {tracks:[], favorites:{}, favoritesMeta:{}, playlists:[]};
+  local = local || {tracks:[], favorites:{}, favoritesMeta:{}, playlists:[]};
 
+  // --- titres : fusion par id, champ par champ selon updatedAt le plus récent ---
+  // Les likes sont pris en bloc du côté le plus récent (pas en union) : une union
+  // empêcherait de jamais retirer un like, puisqu'un like enlevé d'un côté
+  // réapparaîtrait toujours via l'autre côté qui l'a encore.
+  const map = new Map();
+  (remote.tracks||[]).forEach(t=> map.set(t.id, t));
+  (local.tracks||[]).forEach(t=>{
+    const ex = map.get(t.id);
+    if(!ex){ map.set(t.id, t); return; }
+    const merged = Object.assign({}, ex);
+    const exUpdated = ex.updatedAt || ex.addedAt || 0;
+    const tUpdated = t.updatedAt || t.addedAt || 0;
+    merged.likes = (tUpdated >= exUpdated) ? (t.likes||[]) : (ex.likes||[]);
+    merged.plays = Math.max(ex.plays||0, t.plays||0);
+    merged.playLog = Array.from(new Set([...(ex.playLog||[]), ...(t.playLog||[])])).sort((a,b)=>a-b).slice(-300);
+    if(tUpdated >= exUpdated){
+      ['titre','artiste','annee','proposePar','tags','spotify','deezer','youtube','jukebox','cover','genre','popularity','addedAt','updatedAt'].forEach(k=>{
+        if(t[k]!==undefined) merged[k]=t[k];
+      });
+    }
+    map.set(t.id, merged);
+  });
+  const tracks = Array.from(map.values());
+
+  // --- favoris : pris en bloc du côté le plus récent par personne (même raison que les likes) ---
+  const favorites = {};
+  const favMeta = {};
+  const remoteFavMeta = remote.favoritesMeta || {};
+  const localFavMeta = local.favoritesMeta || {};
+  const allPseudos = new Set([...Object.keys(remote.favorites||{}), ...Object.keys(local.favorites||{})]);
+  allPseudos.forEach(p=>{
+    const rTime = remoteFavMeta[p] || 0;
+    const lTime = localFavMeta[p] || 0;
+    if(rTime===0 && lTime===0){
+      // pas d'horodatage connu des deux côtés (anciennes données) : on garde l'union par sécurité
+      favorites[p] = Array.from(new Set([...(remote.favorites?.[p]||[]), ...(local.favorites?.[p]||[])]));
+      favMeta[p] = 0;
+    } else if(lTime >= rTime){
+      favorites[p] = local.favorites?.[p] || [];
+      favMeta[p] = lTime;
+    } else {
+      favorites[p] = remote.favorites?.[p] || [];
+      favMeta[p] = rTime;
+    }
+  });
+
+  // --- playlists : fusion par id, trackIds unis, nom du plus récemment modifié ---
+  const plMap = new Map();
+  (remote.playlists||[]).forEach(p=>plMap.set(p.id, p));
+  (local.playlists||[]).forEach(p=>{
+    const ex = plMap.get(p.id);
+    if(!ex){ plMap.set(p.id, p); return; }
+    plMap.set(p.id, Object.assign({}, ex, {
+      name: (p.updatedAt||p.createdAt||0) >= (ex.updatedAt||ex.createdAt||0) ? p.name : ex.name,
+      trackIds: Array.from(new Set([...(ex.trackIds||[]), ...(p.trackIds||[])]))
+    }));
+  });
+  const playlists = Array.from(plMap.values());
+
+  return { tracks, favorites, favoritesMeta: favMeta, playlists };
+}
+
+// ---------- GitHub : lecture, fusion, écriture ----------
+const GITHUB_OWNER = 'IwipCo';
+const GITHUB_REPO = 'CarnetMusical';
+const GITHUB_PATH = 'carnet-musical-data.json';
+const GITHUB_BRANCH = 'main';
+
+function b64EncodeUtf8(str){ return btoa(unescape(encodeURIComponent(str))); }
+function b64DecodeUtf8(str){ return decodeURIComponent(escape(atob(str))); }
+
+async function fetchRemoteDB(){
+  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}?ref=${GITHUB_BRANCH}`;
+  const headers = { 'Accept': 'application/vnd.github.v3+json' };
+  if(prefs.githubToken) headers['Authorization'] = `token ${prefs.githubToken}`;
+  const res = await fetch(url, { method:'GET', headers, cache:'no-store' });
+  if(res.status === 404) return { sha:null, data:null };
+  if(!res.ok){
+    const err = await res.json().catch(()=>({}));
+    throw new Error(`Lecture refusée (${res.status}): ${err.message || 'accès impossible'}`);
+  }
+  const json = await res.json();
+  const text = b64DecodeUtf8(json.content.replace(/\n/g,''));
+  const data = JSON.parse(text);
+  return { sha: json.sha, data };
+}
+
+let autoRefreshTimer = null;
+let isSyncing = false;
+
+// Rafraîchissement silencieux en tâche de fond : tire le distant et fusionne en local sans pousser
+async function silentSync(){
+  if(!prefs.githubToken || isSyncing) return;
+  if(document.querySelector('.overlay.open')) return; // ne perturbe pas une fenêtre ouverte
+  try{
+    const { data } = await fetchRemoteDB();
+    if(!data || !Array.isArray(data.tracks)) return;
+    const before = JSON.stringify(DB);
+    DB = mergeDB(data, DB);
+    if(!DB.favorites) DB.favorites = {};
+    if(!DB.favoritesMeta) DB.favoritesMeta = {};
+    if(!DB.playlists) DB.playlists = [];
+    if(JSON.stringify(DB) !== before){
+      await idbSet('musicdb', DB);
+      render();
+      showToast('🔄 Catalogue actualisé (mise à jour distante).');
+    }
+  }catch(e){ /* silencieux : pas de perturbation si le réseau est indisponible */ }
+}
+
+// Sauvegarde + push : fusionne toujours avec la dernière version distante avant d'écrire
+async function pushToGitHub(){
+  if (!prefs.githubToken || isSyncing) return;
+  isSyncing = true;
   try {
     showToast('⏳ Synchronisation GitHub en cours...');
+    const { sha, data: remoteData } = await fetchRemoteDB();
 
-    const getUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
-    
-    // 1. Get current file SHA (Forced no-store to bypass browser cache)
-    const getRes = await fetch(getUrl, {
-      method: 'GET',
-      headers: {
-        'Authorization': `token ${token}`,
-        'Accept': 'application/vnd.github.v3+json'
-      },
-      cache: 'no-store' // <--- CRUCIAL FIX: Fixes caching issues preventing SHA retrieval
-    });
+    // Fusion : on ne remplace jamais bêtement, on combine distant + local
+    const merged = mergeDB(remoteData, DB);
+    DB = merged;
+    await idbSet('musicdb', DB);
+    render();
 
-    let sha = '';
-    if (getRes.ok) {
-      const getJson = await getRes.json();
-      sha = getJson.sha;
-      console.log("✅ SHA récupéré :", sha);
-    } else if (getRes.status === 404) {
-      console.log("ℹ️ Fichier non trouvé, création d'un nouveau fichier prévue.");
-    } else {
-      const errData = await getRes.json().catch(() => ({}));
-      throw new Error(`Lecture refusée (${getRes.status}): ${errData.message || 'Token invalide'}`);
-    }
-
-    // 2. Prepare payload
     const contentStr = JSON.stringify(DB, null, 2);
-    // Base64 encode handling utf-8 accurately
-    const base64Content = btoa(unescape(encodeURIComponent(contentStr)));
+    const base64Content = b64EncodeUtf8(contentStr);
 
     const putPayload = {
       message: `Mise à jour du carnet via Le Carnet Web App (par ${currentPseudo() || 'anonyme'})`,
       content: base64Content,
-      branch: branch
+      branch: GITHUB_BRANCH
     };
-    
-    // Safety check to avoid 422 error
-    if (sha) {
-      putPayload.sha = sha;
-    }
+    if (sha) putPayload.sha = sha;
 
-    // 3. Put new content
-    const putRes = await fetch(getUrl, {
+    const putUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
+    const putRes = await fetch(putUrl, {
       method: 'PUT',
       headers: {
-        'Authorization': `token ${token}`,
+        'Authorization': `token ${prefs.githubToken}`,
         'Accept': 'application/vnd.github.v3+json',
         'Content-Type': 'application/json'
       },
@@ -492,15 +588,40 @@ async function pushToGitHub() {
     });
 
     if (!putRes.ok) {
-      const errData = await putRes.json().catch(() => ({}));
-      console.error("GitHub PUT Error:", errData);
-      throw new Error(`Rejeté par GitHub (${putRes.status}): ${errData.message || 'Erreur inconnue'}`);
+      // Cas de collision : quelqu'un a écrit entre notre lecture et notre écriture -> on relit, refusionne, réessaie une fois
+      if(putRes.status === 409 || putRes.status === 422){
+        const retry = await fetchRemoteDB();
+        const merged2 = mergeDB(retry.data, DB);
+        DB = merged2;
+        await idbSet('musicdb', DB);
+        render();
+        const retryPayload = {
+          message: `Mise à jour du carnet (retry) via Le Carnet Web App (par ${currentPseudo() || 'anonyme'})`,
+          content: b64EncodeUtf8(JSON.stringify(DB, null, 2)),
+          branch: GITHUB_BRANCH
+        };
+        if(retry.sha) retryPayload.sha = retry.sha;
+        const retryRes = await fetch(putUrl, {
+          method:'PUT',
+          headers:{ 'Authorization': `token ${prefs.githubToken}`, 'Accept':'application/vnd.github.v3+json', 'Content-Type':'application/json' },
+          body: JSON.stringify(retryPayload)
+        });
+        if(!retryRes.ok){
+          const errData = await retryRes.json().catch(()=>({}));
+          throw new Error(`Rejeté par GitHub après nouvelle tentative (${retryRes.status}): ${errData.message || 'erreur inconnue'}`);
+        }
+      } else {
+        const errData = await putRes.json().catch(() => ({}));
+        throw new Error(`Rejeté par GitHub (${putRes.status}): ${errData.message || 'Erreur inconnue'}`);
+      }
     }
 
     showToast('✅ Fichier sauvegardé sur GitHub avec succès !');
   } catch (e) {
     console.error("GitHub Push Error: ", e);
     showToast(`❌ Échec de la sauvegarde: ${e.message}`);
+  } finally {
+    isSyncing = false;
   }
 }
 
@@ -515,6 +636,7 @@ el('githubSaveBtn').onclick = async () => {
   await savePrefs();
   el('githubOverlay').classList.remove('open');
   showToast(prefs.githubToken ? 'Token enregistré localement.' : 'Token supprimé.');
+  if(prefs.githubToken){ silentSync(); }
 };
 
 
@@ -573,6 +695,21 @@ function cardAccentStyle(t){
   if(!prefs.colorMode) return '';
   const h = hueFor(t.artiste || t.titre || 'x');
   return `border-left:4px solid hsl(${h} 60% 50%);`;
+}
+
+// ---------- limite de titres par personne ----------
+function countTracksByPerson(name){
+  const n = normName(name);
+  if(!n) return 0;
+  return DB.tracks.filter(t => normName(t.proposePar) === n).length;
+}
+function updateProposeParHint(){
+  const name = el('f_proposePar').value.trim();
+  const hintEl = el('proposeParHint');
+  if(!name){ hintEl.textContent = `Limite : ${MAX_TRACKS_PER_PERSON} titres par personne.`; return; }
+  const count = countTracksByPerson(name) - (state.editingId ? 1 : 0); // ne pas compter le titre en cours d'édition
+  const adjusted = Math.max(0, count);
+  hintEl.textContent = `${escapeHtml(name)} a proposé ${adjusted}/${MAX_TRACKS_PER_PERSON} titres.`;
 }
 
 // ---------- tags ----------
@@ -906,6 +1043,7 @@ window.toggleLike = async (id)=>{
   t.likes = t.likes||[];
   const i = t.likes.indexOf(pseudo);
   if(i>=0) t.likes.splice(i,1); else t.likes.push(pseudo);
+  t.updatedAt = Date.now();
   render();
   await saveDB(true);
 };
@@ -916,6 +1054,8 @@ window.toggleFav = async (id)=>{
   const arr = DB.favorites[pseudo];
   const i = arr.indexOf(id);
   if(i>=0) arr.splice(i,1); else arr.push(id);
+  DB.favoritesMeta = DB.favoritesMeta || {};
+  DB.favoritesMeta[pseudo] = Date.now();
   render();
   await saveDB(true);
 };
@@ -932,6 +1072,7 @@ window.openEdit = (id)=>{
   el('dupWarningSlot').innerHTML='';
   pendingEnrichment = (t.cover||t.genre||t.popularity) ? {cover:t.cover||'',genre:t.genre||'',popularity:t.popularity||null} : null;
   renderEnrichPreview();
+  updateProposeParHint();
   el('overlay').classList.add('open');
 };
 
@@ -943,10 +1084,12 @@ function resetModal(){
   el('dupWarningSlot').innerHTML = '';
   pendingEnrichment = null;
   renderEnrichPreview();
+  updateProposeParHint();
 }
 el('addBtn').onclick = ()=>{ resetModal(); el('overlay').classList.add('open'); };
 el('cancelBtn').onclick = ()=> el('overlay').classList.remove('open');
 el('overlay').addEventListener('click', e=>{ if(e.target.id==='overlay') el('overlay').classList.remove('open'); });
+el('f_proposePar').addEventListener('input', updateProposeParHint);
 
 function checkDupLive(){
   const titre = el('f_titre').value, artiste = el('f_artiste').value;
@@ -960,15 +1103,26 @@ el('saveBtn').onclick = async ()=>{
   const titre = el('f_titre').value.trim();
   const artiste = el('f_artiste').value.trim();
   if(!titre || !artiste){ showToast("Le titre et l'artiste sont nécessaires."); return; }
+  const proposePar = el('f_proposePar').value.trim();
+
+  if(!state.editingId && proposePar){
+    const count = countTracksByPerson(proposePar);
+    if(count >= MAX_TRACKS_PER_PERSON){
+      showToast(`Limite atteinte : ${proposePar} a déjà proposé ${MAX_TRACKS_PER_PERSON} titres.`);
+      return;
+    }
+  }
+
   const tags = el('f_tags').value.split(',').map(s=>s.trim()).filter(Boolean);
   const payload = {
     titre, artiste, annee: parseInt(el('f_annee').value)||null,
-    proposePar: el('f_proposePar').value.trim(), tags,
+    proposePar, tags,
     spotify: el('f_spotify').value.trim(), deezer: el('f_deezer').value.trim(),
     youtube: el('f_youtube').value.trim(), jukebox: el('f_jukebox').value.trim(),
     cover: pendingEnrichment ? pendingEnrichment.cover : '',
     genre: pendingEnrichment ? pendingEnrichment.genre : '',
     popularity: pendingEnrichment ? pendingEnrichment.popularity : null,
+    updatedAt: Date.now(),
   };
   if(state.editingId){
     const t = DB.tracks.find(x=>x.id===state.editingId);
@@ -1019,6 +1173,7 @@ window.toggleTrackInPlaylist = async (plId, checked)=>{
   const idx = pl.trackIds.indexOf(trackPlaylistContextId);
   if(checked && idx===-1) pl.trackIds.push(trackPlaylistContextId);
   if(!checked && idx>=0) pl.trackIds.splice(idx,1);
+  pl.updatedAt = Date.now();
   renderTrackPlaylistList();
   render();
   await saveDB(true);
@@ -1027,7 +1182,7 @@ el('quickCreatePlaylistBtn').onclick = async ()=>{
   const name = el('quickPlaylistName').value.trim();
   if(!name){ showToast('Donne un nom à la playlist.'); return; }
   DB.playlists = DB.playlists||[];
-  DB.playlists.push({id:'pl'+Date.now()+Math.floor(Math.random()*1000), name, trackIds: trackPlaylistContextId?[trackPlaylistContextId]:[], createdAt:Date.now()});
+  DB.playlists.push({id:'pl'+Date.now()+Math.floor(Math.random()*1000), name, trackIds: trackPlaylistContextId?[trackPlaylistContextId]:[], createdAt:Date.now(), updatedAt:Date.now()});
   el('quickPlaylistName').value='';
   renderTrackPlaylistList();
   render();
@@ -1057,7 +1212,7 @@ el('createPlaylistBtn').onclick = async ()=>{
   const name = el('newPlaylistName').value.trim();
   if(!name){ showToast('Donne un nom à la playlist.'); return; }
   DB.playlists = DB.playlists||[];
-  DB.playlists.push({id:'pl'+Date.now()+Math.floor(Math.random()*1000), name, trackIds:[], createdAt:Date.now()});
+  DB.playlists.push({id:'pl'+Date.now()+Math.floor(Math.random()*1000), name, trackIds:[], createdAt:Date.now(), updatedAt:Date.now()});
   el('newPlaylistName').value='';
   renderPlaylistManageList();
   render();
@@ -1086,81 +1241,26 @@ el('importInput').addEventListener('change', async (e)=>{
     const text = await file.text();
     const parsed = JSON.parse(text);
     if(!parsed.tracks || !Array.isArray(parsed.tracks)) throw new Error('format');
-    let added=0, skipped=0;
-    parsed.tracks.forEach(t=>{
-      if(!t.id || DB.tracks.some(x=>x.id===t.id)){ skipped++; return; }
-      DB.tracks.push(t); added++;
-    });
-    if(parsed.favorites){
-      Object.keys(parsed.favorites).forEach(p=>{
-        DB.favorites[p] = Array.from(new Set([...(DB.favorites[p]||[]), ...(parsed.favorites[p]||[])]));
-      });
-    }
-    if(parsed.playlists && Array.isArray(parsed.playlists)){
-      DB.playlists = DB.playlists||[];
-      parsed.playlists.forEach(pl=>{
-        if(!pl.id || DB.playlists.some(x=>x.id===pl.id)) return;
-        DB.playlists.push(pl);
-      });
-    }
+    DB = mergeDB(parsed, DB);
     render();
     await saveDB(true);
-    showToast(`Import terminé : ${added} ajouté(s), ${skipped} ignoré(s).`);
+    showToast(`Import fusionné avec les données actuelles.`);
   }catch(err){
     showToast("Le fichier n'a pas le bon format.");
   }
   e.target.value='';
 });
 
-// Load remote JSON catalog
+// Chargement manuel du catalogue distant (fusion, jamais de remplacement brut)
 el('loadRemoteBtn').onclick = async ()=>{
   showToast('Téléchargement du catalogue distant...');
   try {
-    let parsed;
-    // Bypassing GitHub's 5 minutes cache if token is present by reading the API directly
-    if (prefs.githubToken) {
-        const response = await fetch(`https://api.github.com/repos/IwipCo/CarnetMusical/contents/carnet-musical-data.json?ref=main`, {
-          headers: { 'Authorization': `token ${prefs.githubToken}`, 'Accept': 'application/vnd.github.v3.raw' },
-          cache: 'no-store' // Fixes cache issues on download as well
-        });
-        if (!response.ok) throw new Error('network-api');
-        parsed = await response.json();
-    } else {
-        const response = await fetch('https://raw.githubusercontent.com/IwipCo/CarnetMusical/refs/heads/main/carnet-musical-data.json');
-        if (!response.ok) throw new Error('network');
-        parsed = await response.json();
-    }
-    
-    if(!parsed.tracks || !Array.isArray(parsed.tracks)) throw new Error('format');
-    
-    let added = 0, skipped = 0;
-    parsed.tracks.forEach(t => {
-      let existing = DB.tracks.find(x => x.id === t.id);
-      if (existing) {
-        skipped++;
-      } else {
-        DB.tracks.push(t); 
-        added++;
-      }
-    });
-    
-    if(parsed.favorites){
-      Object.keys(parsed.favorites).forEach(p => {
-        DB.favorites[p] = Array.from(new Set([...(DB.favorites[p]||[]), ...(parsed.favorites[p]||[])]));
-      });
-    }
-    
-    if(parsed.playlists && Array.isArray(parsed.playlists)){
-      DB.playlists = DB.playlists || [];
-      parsed.playlists.forEach(pl => {
-        if(!pl.id || DB.playlists.some(x => x.id === pl.id)) return;
-        DB.playlists.push(pl);
-      });
-    }
-    
+    const { data } = await fetchRemoteDB();
+    if(!data || !Array.isArray(data.tracks)) throw new Error('format');
+    DB = mergeDB(data, DB);
     render();
-    await saveDB(false); // only local to prevent an infinite loop
-    showToast(`Catalogue distant importé : ${added} ajouté(s), ${skipped} ignoré(s).`);
+    await idbSet('musicdb', DB);
+    showToast('Catalogue distant fusionné avec tes données locales.');
   } catch(err) {
     showToast("Erreur de téléchargement ou format du catalogue distant.");
     console.error(err);
@@ -1183,7 +1283,9 @@ function computeStats(){
   const topPlayed = [...tracks].sort((a,b)=>(b.plays||0)-(a.plays||0)).filter(t=>t.plays).slice(0,5);
   const topLiked = [...tracks].sort((a,b)=>(b.likes||[]).length-(a.likes||[]).length).filter(t=>(t.likes||[]).length).slice(0,5);
   const playlists = (DB.playlists||[]).map(p=>({name:p.name, count:p.trackIds.length})).sort((a,b)=>b.count-a.count);
-  return {peopleCount:people.size, trackCount:tracks.length, artistCount:artists.size, totalLikes, totalPlays, addMonth, playMonth, topPlayed, topLiked, playlistCount:(DB.playlists||[]).length, playlists};
+  const perPerson = {};
+  tracks.forEach(t=>{ if(t.proposePar) perPerson[t.proposePar] = (perPerson[t.proposePar]||0)+1; });
+  return {peopleCount:people.size, trackCount:tracks.length, artistCount:artists.size, totalLikes, totalPlays, addMonth, playMonth, topPlayed, topLiked, playlistCount:(DB.playlists||[]).length, playlists, perPerson};
 }
 function barsHtml(dataObj){
   const keys = Object.keys(dataObj).sort().slice(-8);
@@ -1206,6 +1308,8 @@ function renderStats(){
       <div class="stat-box"><div class="stat-num">${s.totalLikes}</div><div class="stat-label">likes cumulés</div></div>
       <div class="stat-box"><div class="stat-num">${s.totalPlays}</div><div class="stat-label">lectures dans l'appli</div></div>
     </div>
+    <h3 class="display" style="font-size:15px;margin:20px 0 8px;">Titres par personne (limite ${MAX_TRACKS_PER_PERSON})</h3>
+    ${Object.keys(s.perPerson).length? `<ol class="statlist">${Object.entries(s.perPerson).sort((a,b)=>b[1]-a[1]).map(([name,count])=>`<li>${escapeHtml(name)} <span class="mono">(${count}/${MAX_TRACKS_PER_PERSON})</span></li>`).join('')}</ol>` : '<div class="hint">Aucun titre proposé.</div>'}
     <h3 class="display" style="font-size:15px;margin:20px 0 8px;">Ajouts par mois</h3>
     ${barsHtml(s.addMonth)}
     <h3 class="display" style="font-size:15px;margin:20px 0 8px;">Lectures par mois (dans l'appli)</h3>
@@ -1260,6 +1364,10 @@ el('colorToggle').addEventListener('click', async ()=>{
   await loadDB();
   updateSyncStatus();
   render();
+  if(prefs.githubToken){
+    silentSync();
+    autoRefreshTimer = setInterval(silentSync, 45000);
+  }
 })();
 </script>
 </body>
