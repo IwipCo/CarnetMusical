@@ -164,12 +164,12 @@
         "rock"
       ],
       "spotify": "",
-      "deezer": "",
+      "deezer": "https://www.deezer.com/track/3937217881",
       "youtube": "https://www.youtube.com/watch?v=-Bp6po9lHwo&list=RD-Bp6po9lHwo&start_radio=1",
       "jukebox": "",
-      "cover": "",
-      "genre": "",
-      "popularity": null,
+      "cover": "https://cdn-images.dzcdn.net/images/cover/ea9782202a27ecb386625846177f8f30/500x500-000000-80-0-0.jpg",
+      "genre": "Pop",
+      "popularity": 912075,
       "id": "t1783519996161193",
       "likes": [
         "Dimitri"
