@@ -71,7 +71,7 @@
       "tags": [
         "feelgood"
       ],
-      "spotify": "",
+      "spotify": "https://open.spotify.com/intl-fr/track/0YJXUbXyBcsHtxyAybwwJZ?si=b288ee2deb384b6c",
       "deezer": "https://www.deezer.com/track/3069972281",
       "youtube": "https://www.youtube.com/watch?v=-mV1mXzBa6o&list=RD-mV1mXzBa6o&start_radio=1",
       "jukebox": "",
@@ -84,7 +84,8 @@
       "plays": 1,
       "playLog": [
         1783538102034
-      ]
+      ],
+      "updatedAt": 1783539566937
     },
     {
       "titre": "nantes",
