@@ -193,11 +193,9 @@
       "cover": "",
       "genre": "",
       "popularity": null,
-      "updatedAt": 1783539059578,
+      "updatedAt": 1783540008261,
       "id": "t1783539050888482",
-      "likes": [
-        "Dimitri"
-      ],
+      "likes": [],
       "addedAt": 1783539050888,
       "plays": 0,
       "playLog": []
@@ -211,6 +209,11 @@
       "t1783380689451344",
       "t1783539050888482"
     ]
+  },
+  "favoritesMeta": {
+    "IwIp": 0,
+    "Dimtri": 0,
+    "Dimitri": 1783540044679
   },
   "playlists": [
     {
