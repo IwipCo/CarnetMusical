@@ -171,7 +171,9 @@
       "genre": "",
       "popularity": null,
       "id": "t1783519996161193",
-      "likes": [],
+      "likes": [
+        "Dimitri"
+      ],
       "addedAt": 1783519996161,
       "plays": 1,
       "playLog": [
