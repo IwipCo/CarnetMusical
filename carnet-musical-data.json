@@ -92,9 +92,9 @@
       "annee": 2007,
       "proposePar": "Dimitri",
       "tags": [],
-      "spotify": "",
+      "spotify": "https://open.spotify.com/intl-fr/track/1WBSFlSLyOZnSa8fj7a5yC?si=60a89318ed2e42ea",
       "deezer": "https://www.deezer.com/track/426572052",
-      "youtube": "",
+      "youtube": "https://www.youtube.com/watch?v=dPRYEZx01qU&list=RDdPRYEZx01qU&start_radio=1",
       "jukebox": "",
       "cover": "https://cdn-images.dzcdn.net/images/cover/6074be9ae63514d7bb7dcf279d5f9054/500x500-000000-80-0-0.jpg",
       "genre": "Alternative",
@@ -105,7 +105,8 @@
       ],
       "addedAt": 1783515642563,
       "plays": 0,
-      "playLog": []
+      "playLog": [],
+      "updatedAt": 1783539538760
     },
     {
       "titre": "Something Good",
