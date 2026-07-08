@@ -1,33 +1,6 @@
 {
   "tracks": [
     {
-      "id": "t6",
-      "titre": "Papaoutai",
-      "artiste": "Stromae",
-      "annee": 2013,
-      "proposePar": "Karim",
-      "spotify": "https://open.spotify.com/track/6Qb7Cy0KwSTVNsimGkT9NX",
-      "deezer": "https://www.deezer.com/track/69879250",
-      "youtube": "",
-      "tags": [
-        "francais",
-        "nostalgie"
-      ],
-      "likes": [
-        "Sofia"
-      ],
-      "addedAt": 1779926662908,
-      "cover": "https://cdn-images.dzcdn.net/images/cover/914db9146f330d0a2969d157872da5eb/500x500-000000-80-0-0.jpg",
-      "genre": "Pop",
-      "popularity": 879562,
-      "similar": [],
-      "plays": 3,
-      "playLog": [
-        1782345862908
-      ],
-      "jukebox": ""
-    },
-    {
       "titre": "Just Jammin",
       "artiste": "Gramatik",
       "annee": 2015,
@@ -208,8 +181,7 @@
   ],
   "favorites": {
     "IwIp": [
-      "t1783380689451344",
-      "t6"
+      "t1783380689451344"
     ],
     "Dimtri": [
       "t1783380689451344"
