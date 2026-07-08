@@ -28,32 +28,6 @@
       "jukebox": ""
     },
     {
-      "id": "t12",
-      "titre": "On the Road Again",
-      "artiste": "Willie Nelson",
-      "annee": 1980,
-      "proposePar": "Karim",
-      "spotify": "",
-      "deezer": "https://www.deezer.com/track/1139648532",
-      "youtube": "",
-      "tags": [
-        "route",
-        "road-trip",
-        "annees80"
-      ],
-      "likes": [
-        "Marc"
-      ],
-      "addedAt": 1783296262908,
-      "cover": "https://cdn-images.dzcdn.net/images/cover/29c268517c9b242252bb2615180f8efe/500x500-000000-80-0-0.jpg",
-      "genre": "",
-      "popularity": 605653,
-      "similar": [],
-      "plays": 0,
-      "playLog": [],
-      "jukebox": ""
-    },
-    {
       "titre": "Just Jammin",
       "artiste": "Gramatik",
       "annee": 2015,
