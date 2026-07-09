@@ -212,6 +212,26 @@
       "addedAt": 1783539050888,
       "plays": 0,
       "playLog": []
+    },
+    {
+      "titre": "runaway",
+      "artiste": "aurora",
+      "annee": 2016,
+      "proposePar": "Dimitri",
+      "tags": [],
+      "spotify": "https://open.spotify.com/intl-fr/track/4rXsapBjwYiYffFPW7G4zr?si=6847cb7f9ee9453d",
+      "deezer": "https://www.deezer.com/track/130892874",
+      "youtube": "https://www.youtube.com/watch?v=d_HlPboLRL8&list=RDd_HlPboLRL8&start_radio=1",
+      "jukebox": "",
+      "cover": "https://cdn-images.dzcdn.net/images/cover/9952e8db5a766b36fe15e2838a5eb9f9/500x500-000000-80-0-0.jpg",
+      "genre": "Pop",
+      "popularity": 879824,
+      "updatedAt": 1783629311266,
+      "id": "t1783629311266961",
+      "likes": [],
+      "addedAt": 1783629311266,
+      "plays": 0,
+      "playLog": []
     }
   ],
   "favorites": {
