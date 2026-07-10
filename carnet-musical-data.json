@@ -438,6 +438,28 @@
       "addedAt": 1783680406091,
       "plays": 0,
       "playLog": []
+    },
+    {
+      "titre": "Two Birds on the Wire",
+      "artiste": "Regina Spektor",
+      "annee": null,
+      "proposePar": "XavierR",
+      "tags": [
+        "Pop"
+      ],
+      "spotify": "",
+      "deezer": "",
+      "youtube": "https://www.youtube.com/watch?v=5IPqMpm5Eq8&list=RD5IPqMpm5Eq8&start_radio=1",
+      "jukebox": "",
+      "cover": "",
+      "genre": "",
+      "popularity": null,
+      "updatedAt": 1783680510750,
+      "id": "t1783680510750976",
+      "likes": [],
+      "addedAt": 1783680510750,
+      "plays": 0,
+      "playLog": []
     }
   ],
   "favorites": {
