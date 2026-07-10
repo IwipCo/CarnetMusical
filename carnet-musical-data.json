@@ -460,6 +460,28 @@
       "addedAt": 1783680510750,
       "plays": 0,
       "playLog": []
+    },
+    {
+      "titre": "Bastard Song",
+      "artiste": "Skip the Use",
+      "annee": 2012,
+      "proposePar": "XavierR",
+      "tags": [
+        "Explosif"
+      ],
+      "spotify": "",
+      "deezer": "https://www.deezer.com/track/16088815",
+      "youtube": "https://www.youtube.com/watch?v=CUpSROjPVH8&list=RDCUpSROjPVH8&start_radio=1",
+      "jukebox": "",
+      "cover": "https://cdn-images.dzcdn.net/images/cover/8f06af28ee28a2729a46389f35b60ba1/500x500-000000-80-0-0.jpg",
+      "genre": "Rock",
+      "popularity": 495297,
+      "updatedAt": 1783680720423,
+      "id": "t1783680720423457",
+      "likes": [],
+      "addedAt": 1783680720423,
+      "plays": 0,
+      "playLog": []
     }
   ],
   "favorites": {
