@@ -282,6 +282,26 @@
       "addedAt": 1783673983995,
       "plays": 0,
       "playLog": []
+    },
+    {
+      "titre": "Starburster",
+      "artiste": "Fontaines D.C",
+      "annee": 2024,
+      "proposePar": "Eléa",
+      "tags": [],
+      "spotify": "",
+      "deezer": "https://www.deezer.com/track/2928358851",
+      "youtube": "https://www.youtube.com/watch?v=DDHvKo5NnII&list=RDDDHvKo5NnII&start_radio=1",
+      "jukebox": "",
+      "cover": "https://cdn-images.dzcdn.net/images/cover/8fd422a840884ba1dfaccc3bb42ad67d/500x500-000000-80-0-0.jpg",
+      "genre": "Alternative",
+      "popularity": 784745,
+      "updatedAt": 1783674111465,
+      "id": "t1783674111465460",
+      "likes": [],
+      "addedAt": 1783674111465,
+      "plays": 0,
+      "playLog": []
     }
   ],
   "favorites": {
