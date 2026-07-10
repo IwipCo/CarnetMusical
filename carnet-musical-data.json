@@ -383,6 +383,28 @@
       "addedAt": 1783674745711,
       "plays": 0,
       "playLog": []
+    },
+    {
+      "titre": "In the Ghetto",
+      "artiste": "Elvis Presley",
+      "annee": 2010,
+      "proposePar": "XavierR",
+      "tags": [
+        "Dramatique"
+      ],
+      "spotify": "",
+      "deezer": "https://www.deezer.com/track/6596884",
+      "youtube": "https://www.youtube.com/watch?v=FJ-r0bilzhU&list=RDFJ-r0bilzhU&start_radio=1",
+      "jukebox": "",
+      "cover": "https://cdn-images.dzcdn.net/images/cover/ddd830fa6768774fdc110e4388b88992/500x500-000000-80-0-0.jpg",
+      "genre": "",
+      "popularity": 653955,
+      "updatedAt": 1783679563748,
+      "id": "t1783679563748231",
+      "likes": [],
+      "addedAt": 1783679563748,
+      "plays": 0,
+      "playLog": []
     }
   ],
   "favorites": {
