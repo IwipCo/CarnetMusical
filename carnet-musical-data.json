@@ -317,8 +317,11 @@
       "id": "t1783674111465460",
       "likes": [],
       "addedAt": 1783674111465,
-      "plays": 0,
-      "playLog": []
+      "plays": 2,
+      "playLog": [
+        1783689381937,
+        1783689391501
+      ]
     },
     {
       "titre": "Sunsets",
@@ -531,6 +534,15 @@
       "name": "Pour Danser",
       "trackIds": [],
       "createdAt": 1783456793863
+    },
+    {
+      "id": "pl1783689451021623",
+      "name": "Pour se concentrer",
+      "trackIds": [
+        "t1783380689451344"
+      ],
+      "createdAt": 1783689451021,
+      "updatedAt": 1783689456654
     }
   ]
 }
