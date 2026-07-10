@@ -335,22 +335,24 @@
     {
       "titre": "Wonderful Life",
       "artiste": "Imany, Stream Jockey",
-      "annee": null,
+      "annee": 2021,
       "proposePar": "Eléa",
       "tags": [],
       "spotify": "",
-      "deezer": "",
+      "deezer": "https://www.deezer.com/track/1287572902",
       "youtube": "https://www.youtube.com/watch?v=7ZvPahsmRB0&list=RD7ZvPahsmRB0&start_radio=1",
       "jukebox": "",
-      "cover": "",
-      "genre": "",
-      "popularity": null,
-      "updatedAt": 1783674507475,
+      "cover": "https://cdn-images.dzcdn.net/images/cover/82bca3696847900ad8153b5143cd5d5c/500x500-000000-80-0-0.jpg",
+      "genre": "Electro",
+      "popularity": 633266,
+      "updatedAt": 1783680634765,
       "id": "t1783674507475558",
       "likes": [],
       "addedAt": 1783674507475,
-      "plays": 0,
-      "playLog": []
+      "plays": 1,
+      "playLog": [
+        1783680641492
+      ]
     },
     {
       "titre": "Stolen Dance",
@@ -389,8 +391,11 @@
       "id": "t1783674745711824",
       "likes": [],
       "addedAt": 1783674745711,
-      "plays": 0,
-      "playLog": []
+      "plays": 2,
+      "playLog": [
+        1783680332665,
+        1783680348689
+      ]
     },
     {
       "titre": "In the Ghetto",
@@ -411,12 +416,15 @@
       "id": "t1783679563748231",
       "likes": [],
       "addedAt": 1783679563748,
-      "plays": 4,
+      "plays": 7,
       "playLog": [
         1783680008279,
         1783680033194,
         1783680050223,
-        1783680077036
+        1783680077036,
+        1783680359977,
+        1783680370313,
+        1783680573732
       ]
     },
     {
@@ -442,21 +450,21 @@
       ]
     },
     {
-      "titre": "Two Birds on the Wire",
+      "titre": "Two Birds",
       "artiste": "Regina Spektor",
-      "annee": null,
+      "annee": 2009,
       "proposePar": "XavierR",
       "tags": [
         "Pop"
       ],
       "spotify": "",
-      "deezer": "",
+      "deezer": "https://www.deezer.com/track/3820941",
       "youtube": "https://www.youtube.com/watch?v=5IPqMpm5Eq8&list=RD5IPqMpm5Eq8&start_radio=1",
       "jukebox": "",
-      "cover": "",
-      "genre": "",
-      "popularity": null,
-      "updatedAt": 1783680510750,
+      "cover": "https://cdn-images.dzcdn.net/images/cover/851a55fc3117832e3028f6aafc99d143/500x500-000000-80-0-0.jpg",
+      "genre": "Alternative",
+      "popularity": 634871,
+      "updatedAt": 1783681122933,
       "id": "t1783680510750976",
       "likes": [],
       "addedAt": 1783680510750,
@@ -478,7 +486,7 @@
       "cover": "https://cdn-images.dzcdn.net/images/cover/8f06af28ee28a2729a46389f35b60ba1/500x500-000000-80-0-0.jpg",
       "genre": "Rock",
       "popularity": 495297,
-      "updatedAt": 1783680720423,
+      "updatedAt": 1783681288982,
       "id": "t1783680720423457",
       "likes": [],
       "addedAt": 1783680720423,
