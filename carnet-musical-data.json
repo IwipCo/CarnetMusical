@@ -255,25 +255,27 @@
       "annee": 2026,
       "proposePar": "Eléa",
       "tags": [],
-      "spotify": "",
+      "spotify": "https://open.spotify.com/intl-fr/track/1tmkrsouJPtxwouJPgMsdF?si=f870429322154ea9",
       "deezer": "https://www.deezer.com/track/3773677832",
       "youtube": "https://www.youtube.com/watch?v=8tEKfek8VYg&list=RD8tEKfek8VYg&start_radio=1",
       "jukebox": "",
       "cover": "https://cdn-images.dzcdn.net/images/cover/1c9d27222f773933a630b0a4e09bc19f/500x500-000000-80-0-0.jpg",
       "genre": "Pop",
       "popularity": 125347,
-      "updatedAt": 1783688561412,
+      "updatedAt": 1783756082429,
       "id": "t1783673902348619",
       "likes": [
         "Dimitri"
       ],
       "addedAt": 1783673902348,
-      "plays": 4,
+      "plays": 6,
       "playLog": [
         1783680085516,
         1783680104532,
         1783688236588,
-        1783688248853
+        1783688248853,
+        1783756050902,
+        1783756055924
       ]
     },
     {
@@ -293,11 +295,13 @@
       "id": "t1783673983995242",
       "likes": [],
       "addedAt": 1783673983995,
-      "plays": 3,
+      "plays": 5,
       "playLog": [
         1783679960187,
         1783688564095,
-        1783688575910
+        1783688575910,
+        1783756039404,
+        1783756044428
       ]
     },
     {
@@ -503,8 +507,10 @@
       "id": "t1783680720423457",
       "likes": [],
       "addedAt": 1783680720423,
-      "plays": 0,
-      "playLog": []
+      "plays": 1,
+      "playLog": [
+        1783755347240
+      ]
     }
   ],
   "favorites": {
