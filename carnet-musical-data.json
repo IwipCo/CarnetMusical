@@ -511,6 +511,26 @@
       "playLog": [
         1783755347240
       ]
+    },
+    {
+      "titre": "Legend",
+      "artiste": "Otyken",
+      "annee": 2022,
+      "proposePar": "Dimitri",
+      "tags": [],
+      "spotify": "https://open.spotify.com/intl-fr/track/2mzOfWQCvbN3eUcklu4tdv?si=3edbac3261be4eb3",
+      "deezer": "https://www.deezer.com/track/2690102642",
+      "youtube": "",
+      "jukebox": "",
+      "cover": "https://cdn-images.dzcdn.net/images/cover/34369d96a6051f32b4e8c1b41b1c4f71/500x500-000000-80-0-0.jpg",
+      "genre": "Folk",
+      "popularity": 373803,
+      "updatedAt": 1783756817627,
+      "id": "t1783756817627457",
+      "likes": [],
+      "addedAt": 1783756817627,
+      "plays": 0,
+      "playLog": []
     }
   ],
   "favorites": {
