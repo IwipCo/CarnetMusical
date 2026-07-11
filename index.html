@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Carnet : v0.11</title>
+<title>Le Carnet : v0.13</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -188,7 +188,7 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
   <div class="top-inner">
     <div class="brand">
       <div class="disc"></div>
-      <div><h1 class="display">Le Carnet</h1><span class="tagline">titres partagés entre nous — v0.11</span></div>
+      <div><h1 class="display">Le Carnet</h1><span class="tagline">titres partagés entre nous — v0.13</span></div>
     </div>
     <button class="btn-primary" id="addBtn" style="margin:0 auto;">＋ Ajouter un titre</button>
     <div class="pseudo-field">
@@ -298,6 +298,14 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
     <div class="modal-actions">
       <button class="btn-secondary" id="githubCloseBtn">Fermer</button>
       <button class="btn-primary" id="githubSaveBtn">Sauvegarder le token</button>
+    </div>
+    <div style="border-top:1px solid var(--line);margin-top:20px;padding-top:16px;">
+      <label style="display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin-bottom:6px;">Partager l'accès à quelqu'un d'autre</label>
+      <div class="hint" style="margin-bottom:10px;">
+        Génère un lien contenant ce token : la personne qui l'ouvre sera connectée automatiquement, sans avoir à le coller elle-même.
+        ⚠️ Quiconque a ce lien peut écrire sur le dépôt — ne le partage qu'à des personnes de confiance, et ne le colle jamais dans un espace public.
+      </div>
+      <button class="btn-small" id="copyShareLinkBtn" type="button">🔗 Copier un lien avec ce token</button>
     </div>
   </div>
 </div>
@@ -549,7 +557,7 @@ async function silentSync(){
     if(!DB.playlists) DB.playlists = [];
     if(JSON.stringify(DB) !== before){
       await idbSet('musicdb', DB);
-      render();
+      renderUnlessPlaying();
       showToast('🔄 Catalogue actualisé (mise à jour distante).');
     }
   }catch(e){ /* silencieux : pas de perturbation si le réseau est indisponible */ }
@@ -567,7 +575,7 @@ async function pushToGitHub(){
     const merged = mergeDB(remoteData, DB);
     DB = merged;
     await idbSet('musicdb', DB);
-    render();
+    renderUnlessPlaying();
 
     const contentStr = JSON.stringify(DB, null, 2);
     const base64Content = b64EncodeUtf8(contentStr);
@@ -597,7 +605,7 @@ async function pushToGitHub(){
         const merged2 = mergeDB(retry.data, DB);
         DB = merged2;
         await idbSet('musicdb', DB);
-        render();
+        renderUnlessPlaying();
         const retryPayload = {
           message: `Mise à jour du carnet (retry) via Le Carnet Web App (par ${currentPseudo() || 'anonyme'})`,
           content: b64EncodeUtf8(JSON.stringify(DB, null, 2)),
@@ -641,6 +649,33 @@ el('githubSaveBtn').onclick = async () => {
   showToast(prefs.githubToken ? 'Token enregistré localement.' : 'Token supprimé.');
   if(prefs.githubToken){ silentSync(); }
 };
+el('copyShareLinkBtn').onclick = async () => {
+  const token = el('githubTokenInput').value.trim() || prefs.githubToken;
+  if(!token){ showToast('Renseigne et sauvegarde un token avant de générer le lien.'); return; }
+  const base = location.origin + location.pathname;
+  const link = base + '#ghtoken=' + encodeURIComponent(token);
+  try{
+    await navigator.clipboard.writeText(link);
+    showToast('Lien copié — pense à ne le partager qu\'à des personnes de confiance.');
+  }catch(e){
+    // Repli si l'API clipboard est indisponible (ex. contexte non sécurisé)
+    window.prompt('Copie ce lien manuellement :', link);
+  }
+};
+
+// Récupère un token GitHub passé dans le fragment d'URL (#ghtoken=...), l'enregistre
+// localement puis nettoie immédiatement l'adresse pour ne pas le laisser traîner
+// visiblement dans la barre du navigateur / l'historique de cette page.
+async function importTokenFromUrl(){
+  if(!location.hash || location.hash.length < 2) return;
+  const params = new URLSearchParams(location.hash.slice(1));
+  const token = params.get('ghtoken');
+  if(!token) return;
+  prefs.githubToken = decodeURIComponent(token);
+  await savePrefs();
+  history.replaceState(null, '', location.pathname + location.search);
+  showToast('🔗 Connecté via le lien partagé.');
+}
 
 
 // ---------- helpers ----------
@@ -830,6 +865,19 @@ window.ytToggle = (id)=>{
   if(p.getPlayerState()===1) p.pauseVideo(); else p.playVideo();
 };
 window.ytSetVolume = (id, val)=>{ const p = ytPlayers[id]; if(p && p.setVolume) p.setVolume(val); };
+function isYouTubePlaying(){
+  if(!state.openEmbed) return false;
+  if((state.embedTab[state.openEmbed]||'') !== 'youtube') return false;
+  const p = ytPlayers[state.openEmbed];
+  try{ return !!(p && p.getPlayerState && p.getPlayerState() === 1); }catch(e){ return false; }
+}
+// Re-rend la grille sauf si une vidéo YouTube est activement en lecture (pour ne pas la couper) ;
+// dans ce cas, les données sont quand même mises à jour en mémoire/IndexedDB, juste pas affichées
+// tout de suite — le prochain rendu normal (fermeture du lecteur, recherche, etc.) rattrapera l'affichage.
+function renderUnlessPlaying(){
+  if(isYouTubePlaying()) return;
+  render();
+}
 
 // ---------- play tracking (proxy metric, not real platform streams) ----------
 let recentPlayGuard = {};
@@ -844,7 +892,12 @@ async function recordPlay(id, fromYT){
   t.playLog = t.playLog||[];
   t.playLog.push(nowT);
   if(t.playLog.length>300) t.playLog = t.playLog.slice(-300);
-  await saveDB(true);
+  // Sauvegarde locale uniquement : on évite de déclencher un push GitHub (et donc
+  // un re-render complet) juste parce qu'une lecture démarre, sinon le lecteur
+  // YouTube qui vient de se lancer serait immédiatement détruit et recréé.
+  // Le compteur sera poussé à la prochaine sauvegarde "normale" (like, ajout,
+  // playlist…) ou lors du prochain rafraîchissement en tâche de fond.
+  await saveDB(false);
 }
 
 // ---------- filtering / grouping ----------
@@ -1360,6 +1413,7 @@ el('colorToggle').addEventListener('click', async ()=>{
 (async function init(){
   await initIDB();
   await loadPrefs();
+  await importTokenFromUrl();
   el('pseudoInput').value = prefs.pseudo||'';
   document.body.setAttribute('data-theme', prefs.darkMode?'dark':'light');
   el('themeToggle').querySelector('.knob').textContent = prefs.darkMode?'☀':'☾';
