@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Carnet : v0.13</title>
+<title>Le Carnet : v0.14</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -188,7 +188,7 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
   <div class="top-inner">
     <div class="brand">
       <div class="disc"></div>
-      <div><h1 class="display">Le Carnet</h1><span class="tagline">titres partagés entre nous — v0.13</span></div>
+      <div><h1 class="display">Le Carnet</h1><span class="tagline">titres partagés entre nous — v0.14</span></div>
     </div>
     <button class="btn-primary" id="addBtn" style="margin:0 auto;">＋ Ajouter un titre</button>
     <div class="pseudo-field">
@@ -427,6 +427,8 @@ async function loadDB(){
   if(!DB.favorites) DB.favorites = {};
   if(!DB.favoritesMeta) DB.favoritesMeta = {};
   if(!DB.playlists) DB.playlists = [];
+  if(!DB.deletedTracks) DB.deletedTracks = {};
+  if(!DB.deletedPlaylists) DB.deletedPlaylists = {};
   await saveDB(false); // save structure locally
 }
 
@@ -450,8 +452,20 @@ async function savePrefs(){ await idbSet('prefs', prefs); updateSyncStatus(); }
 function normName(s){ return (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
 
 function mergeDB(remote, local){
-  remote = remote || {tracks:[], favorites:{}, favoritesMeta:{}, playlists:[]};
-  local = local || {tracks:[], favorites:{}, favoritesMeta:{}, playlists:[]};
+  remote = remote || {tracks:[], favorites:{}, favoritesMeta:{}, playlists:[], deletedTracks:{}, deletedPlaylists:{}};
+  local = local || {tracks:[], favorites:{}, favoritesMeta:{}, playlists:[], deletedTracks:{}, deletedPlaylists:{}};
+
+  // --- suppressions (tombstones) : un id supprimé d'un côté ne doit jamais réapparaître
+  // simplement parce que l'autre côté ne le sait pas encore. On garde la date la plus
+  // récente de suppression connue pour chaque id, des deux côtés confondus.
+  function mergeTombstones(a, b){
+    const out = {};
+    const keys = new Set([...Object.keys(a||{}), ...Object.keys(b||{})]);
+    keys.forEach(k=>{ out[k] = Math.max((a||{})[k]||0, (b||{})[k]||0); });
+    return out;
+  }
+  const deletedTracks = mergeTombstones(remote.deletedTracks, local.deletedTracks);
+  const deletedPlaylists = mergeTombstones(remote.deletedPlaylists, local.deletedPlaylists);
 
   // --- titres : fusion par id, champ par champ selon updatedAt le plus récent ---
   // Les likes sont pris en bloc du côté le plus récent (pas en union) : une union
@@ -475,7 +489,7 @@ function mergeDB(remote, local){
     }
     map.set(t.id, merged);
   });
-  const tracks = Array.from(map.values());
+  const tracks = Array.from(map.values()).filter(t => !deletedTracks[t.id]);
 
   // --- favoris : pris en bloc du côté le plus récent par personne (même raison que les likes) ---
   const favorites = {};
@@ -510,9 +524,9 @@ function mergeDB(remote, local){
       trackIds: Array.from(new Set([...(ex.trackIds||[]), ...(p.trackIds||[])]))
     }));
   });
-  const playlists = Array.from(plMap.values());
+  const playlists = Array.from(plMap.values()).filter(p => !deletedPlaylists[p.id]);
 
-  return { tracks, favorites, favoritesMeta: favMeta, playlists };
+  return { tracks, favorites, favoritesMeta: favMeta, playlists, deletedTracks, deletedPlaylists };
 }
 
 // ---------- GitHub : lecture, fusion, écriture ----------
@@ -555,6 +569,8 @@ async function silentSync(){
     if(!DB.favorites) DB.favorites = {};
     if(!DB.favoritesMeta) DB.favoritesMeta = {};
     if(!DB.playlists) DB.playlists = [];
+    if(!DB.deletedTracks) DB.deletedTracks = {};
+    if(!DB.deletedPlaylists) DB.deletedPlaylists = {};
     if(JSON.stringify(DB) !== before){
       await idbSet('musicdb', DB);
       renderUnlessPlaying();
@@ -1199,6 +1215,8 @@ el('saveBtn').onclick = async ()=>{
 el('confirmCancel').onclick = ()=>{ el('confirmOverlay').classList.remove('open'); pendingDeleteId=null; };
 el('confirmOk').onclick = async ()=>{
   if(pendingDeleteId){
+    DB.deletedTracks = DB.deletedTracks || {};
+    DB.deletedTracks[pendingDeleteId] = Date.now();
     DB.tracks = DB.tracks.filter(t=>t.id!==pendingDeleteId);
     Object.keys(DB.favorites).forEach(p=>{ DB.favorites[p] = DB.favorites[p].filter(id=>id!==pendingDeleteId); });
     (DB.playlists||[]).forEach(pl=>{ pl.trackIds = pl.trackIds.filter(id=>id!==pendingDeleteId); });
@@ -1258,6 +1276,8 @@ function renderPlaylistManageList(){
     </div>`).join('');
 }
 window.deletePlaylist = async (id)=>{
+  DB.deletedPlaylists = DB.deletedPlaylists || {};
+  DB.deletedPlaylists[id] = Date.now();
   DB.playlists = (DB.playlists||[]).filter(p=>p.id!==id);
   if(state.playlistFilter===id) state.playlistFilter=null;
   renderPlaylistManageList();
