@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Carnet : v0.14</title>
+<title>Le Carnet : v0.15</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -188,7 +188,7 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
   <div class="top-inner">
     <div class="brand">
       <div class="disc"></div>
-      <div><h1 class="display">Le Carnet</h1><span class="tagline">titres partagés entre nous — v0.14</span></div>
+      <div><h1 class="display">Le Carnet</h1><span class="tagline">titres partagés entre nous — v0.15</span></div>
     </div>
     <button class="btn-primary" id="addBtn" style="margin:0 auto;">＋ Ajouter un titre</button>
     <div class="pseudo-field">
@@ -287,9 +287,6 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
 <div class="overlay" id="githubOverlay">
   <div class="modal">
     <h2 class="display">Configuration GitHub</h2>
-    <div class="hint" style="margin-bottom:14px; line-height:1.6;">
-      Pour sauvegarder directement tes ajouts sur le catalogue distant, entre ici un <strong>Personal Access Token (PAT)</strong> GitHub ayant les droits d'écriture sur le dépôt <code>IwipCo/CarnetMusical</code>.<br>
-    </div>
     <div class="field">
       <label>Token GitHub (ghp_... ou github_pat_...)</label>
       <input id="githubTokenInput" type="password" placeholder="Colle ton token ici">
@@ -300,9 +297,6 @@ header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1
     </div>
     <div style="border-top:1px solid var(--line);margin-top:20px;padding-top:16px;">
       <label style="display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin-bottom:6px;">Partager l'accès à quelqu'un d'autre</label>
-      <div class="hint" style="margin-bottom:10px;">
-        Génère un lien contenant ce token : la personne qui l'ouvre sera connectée automatiquement, sans avoir à le coller elle-même
-      </div>
       <button class="btn-small" id="copyShareLinkBtn" type="button">🔗 Copier un lien avec ce token</button>
     </div>
   </div>
