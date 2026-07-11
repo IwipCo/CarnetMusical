@@ -511,20 +511,16 @@
     "Dimitri": [
       "t1783458244267535",
       "t1783380689451344"
-    ]
+    ],
+    "IwIp": [],
+    "Dimtri": []
   },
   "favoritesMeta": {
-    "Dimitri": 1783540047535
+    "Dimitri": 1783540047535,
+    "IwIp": 0,
+    "Dimtri": 0
   },
   "playlists": [
-    {
-      "id": "pl1783456777740676",
-      "name": "Pour réfléchir",
-      "trackIds": [
-        "t1783380689451344"
-      ],
-      "createdAt": 1783456777740
-    },
     {
       "id": "pl1783456793863756",
       "name": "Pour Danser",
@@ -549,5 +545,9 @@
       "createdAt": 1783689546201,
       "updatedAt": 1783689546201
     }
-  ]
+  ],
+  "deletedTracks": {},
+  "deletedPlaylists": {
+    "pl1783456777740676": 1783755271007
+  }
 }
