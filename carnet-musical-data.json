@@ -46,32 +46,6 @@
       "updatedAt": 1783540358154
     },
     {
-      "titre": "naanaanaa",
-      "artiste": "cory henry",
-      "annee": 2016,
-      "proposePar": "Dimitri",
-      "tags": [
-        "feelgood"
-      ],
-      "spotify": "https://open.spotify.com/intl-fr/track/3Q94flBRFGAqaCrebWRbno?si=ad7ed0315d3448ea",
-      "deezer": "https://www.deezer.com/track/860333322",
-      "youtube": "https://www.youtube.com/watch?v=nMG_0VOTc-U&list=RDnMG_0VOTc-U",
-      "jukebox": "",
-      "cover": "https://cdn-images.dzcdn.net/images/cover/09dee999b65336bbdf5fbddb14096cb4/500x500-000000-80-0-0.jpg",
-      "genre": "Jazz",
-      "popularity": 288408,
-      "id": "t1783458244267535",
-      "likes": [
-        "Dimitri"
-      ],
-      "addedAt": 1783458244267,
-      "plays": 1,
-      "playLog": [
-        1783540432714
-      ],
-      "updatedAt": 1783540427509
-    },
-    {
       "titre": "How can I tell you",
       "artiste": "madness",
       "annee": 2017,
@@ -535,7 +509,6 @@
   ],
   "favorites": {
     "Dimitri": [
-      "t1783458244267535",
       "t1783380689451344"
     ],
     "IwIp": [],
@@ -572,7 +545,9 @@
       "updatedAt": 1783689546201
     }
   ],
-  "deletedTracks": {},
+  "deletedTracks": {
+    "t1783458244267535": 1784219514754
+  },
   "deletedPlaylists": {
     "pl1783456777740676": 1783755271007
   }
