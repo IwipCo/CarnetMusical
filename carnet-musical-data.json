@@ -505,6 +505,26 @@
       "addedAt": 1783756817627,
       "plays": 0,
       "playLog": []
+    },
+    {
+      "titre": "blind",
+      "artiste": "korn",
+      "annee": 1999,
+      "proposePar": "Emmanuelle",
+      "tags": [],
+      "spotify": "",
+      "deezer": "https://www.deezer.com/track/15215660",
+      "youtube": "",
+      "jukebox": "",
+      "cover": "https://cdn-images.dzcdn.net/images/cover/72d7a182dc9861081be935a83241de01/500x500-000000-80-0-0.jpg",
+      "genre": "Rock",
+      "popularity": 218333,
+      "updatedAt": 1784645484514,
+      "id": "t1784645484514264",
+      "likes": [],
+      "addedAt": 1784645484514,
+      "plays": 0,
+      "playLog": []
     }
   ],
   "favorites": {
